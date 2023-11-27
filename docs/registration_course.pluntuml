@@ -1,0 +1,45 @@
+@startuml
+actor Администратор as admin
+box "External Service"
+participant "online.edu.ru" as edu
+
+box "Internal Service"
+participant "mook.sibsau.ru" as mook
+database "База данных mook.sibsau.ru" as db
+
+mainframe Процесс по регистрации курса в ГИС СЦОС
+
+== Регистрация заявки ==
+
+admin -> edu ++ : Создание новоей заявки
+return Возвращение ответа
+
+== Регистрация курса для работы с ГИС ==
+
+admin -> mook ++ : Выбор курса для отправки в ГИС СЦОС
+
+mook -> db ++ : Создание записи об отправке данных в ГИС СЦОС
+return Результат операции
+
+return Возвращение ответа
+
+== Отправка паспортов в ГИС СЦОС ==
+
+note right of mook: Процесс будет вызыватся будет раз в час \nчерез "Журнал задач" в Moodle и будет выполняться \nпока есть, что отправлять.
+
+mook -> db  ++ : Получить не отправленный паспорт курса в ГИС СЦОС
+
+activate mook
+return Паспорт есть
+
+mook -> edu ++: Фоновая отправка запроса с данными паспорта курса
+return Получение ответа
+mook -> db ++ : Сохранение ответа
+return Результат операции
+
+mook --> admin : отправка уведомления
+
+note left of mook: Скорее всего на email, \nно если будут другие предложения, \nто сделаем (типа telegram бота)
+
+deactivate mook
+@enduml
