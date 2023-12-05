@@ -20,19 +20,18 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_onlineeduru\helper;
-
 global $CFG, $DB, $OUTPUT, $PAGE, $SITE;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$page = optional_param('page', 0,  PARAM_INT);
+$id = required_param('id', PARAM_INT);
 
+$course = $DB->get_record('local_onlineeduru_course', ['id' => $id], '*', MUST_EXIST);
 $systemcontext = $context = context_system::instance();
 
 $PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/index.php'); // Defined here to avoid notices on errors etc.
+$PAGE->set_url('/local/onlineeduru/view.php', ['id' => $course->id]); // Defined here to avoid notices on errors etc.
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
 $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
@@ -48,17 +47,5 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
 
 echo $OUTPUT->header();
 
-$params = array();
-$params['page'] = $page;
-
-$baseurl = new moodle_url('/local/onlineeduru/index.php', $params);
-
-$renderer = $PAGE->get_renderer('local_onlineeduru');
-
-echo $renderer->courses_table([]);
-
-if (has_capability('local/onlineeduru:manager', $context)) {
-    echo $renderer->single_button(helper::get_create_passport_url(), get_string('createnewcourse', 'local_onlineeduru'));
-}
 
 echo $OUTPUT->footer();

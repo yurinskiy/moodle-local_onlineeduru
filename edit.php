@@ -20,19 +20,26 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_onlineeduru\form\choose_course_form;
+use local_onlineeduru\form\course_passport_form;
 use local_onlineeduru\helper;
 
 global $CFG, $DB, $OUTPUT, $PAGE, $SITE;
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
+require_once(__DIR__ . '/lib.php');
 
-$page = optional_param('page', 0,  PARAM_INT);
+$id = optional_param('id', 0, PARAM_INT);
+$action = optional_param('action', helper::ACTION_CREATE, PARAM_ALPHA);
+
+if (!$id && $action !== helper::ACTION_CREATE) {
+    throw new \coding_exception('Указан тип отличный от создания паспорта и не указан курс!');
+}
 
 $systemcontext = $context = context_system::instance();
 
 $PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/index.php'); // Defined here to avoid notices on errors etc.
+$PAGE->set_url(new moodle_url('/local/onlineeduru/edit.php', ['id' => $id, 'action' => $action]));
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
 $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
@@ -41,24 +48,37 @@ $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcon
 require_login();
 
 /** Проверяем права пользователя */
-if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
+if (!is_siteadmin() && !has_capability('local/onlineeduru:manage', $context)) {
     header('Location: ' . $CFG->wwwroot);
     die();
 }
 
+if (!$id) {
+    $mform = new choose_course_form();
+} else {
+    $mform = new course_passport_form(helper::get_update_passport_url($id, $action), [
+        'course' => get_course($id),
+        'version' => helper::get_version_passport($id),
+    ]);
+}
+
+if ($mform->is_cancelled()) {
+    redirect(helper::MANAGER_PATH);
+}
+
 echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pluginname', 'local_onlineeduru'));
 
-$params = array();
-$params['page'] = $page;
+if ($mform instanceof choose_course_form && $data = $mform->get_data()) {
+    redirect(helper::get_update_passport_url($data->courseid), 'Заполняем поле паспорта данными из курса, подождите...', 1);
+} else if ($data = $mform->get_data()) {
+    echo 'test';
 
-$baseurl = new moodle_url('/local/onlineeduru/index.php', $params);
+} else {
+    //$mform->set_data([]);
 
-$renderer = $PAGE->get_renderer('local_onlineeduru');
-
-echo $renderer->courses_table([]);
-
-if (has_capability('local/onlineeduru:manager', $context)) {
-    echo $renderer->single_button(helper::get_create_passport_url(), get_string('createnewcourse', 'local_onlineeduru'));
+    // Display the form.
+    $mform->display();
 }
 
 echo $OUTPUT->footer();

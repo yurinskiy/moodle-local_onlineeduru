@@ -20,19 +20,15 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_onlineeduru\helper;
-
 global $CFG, $DB, $OUTPUT, $PAGE, $SITE;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$page = optional_param('page', 0,  PARAM_INT);
-
 $systemcontext = $context = context_system::instance();
 
 $PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/index.php'); // Defined here to avoid notices on errors etc.
+$PAGE->set_url('/local/onlineeduru/test.php');
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
 $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
@@ -41,24 +37,15 @@ $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcon
 require_login();
 
 /** Проверяем права пользователя */
-if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
+if (!is_siteadmin() && !has_capability('local/onlineeduru:manager', $context)) {
     header('Location: ' . $CFG->wwwroot);
     die();
 }
 
 echo $OUTPUT->header();
+echo $OUTPUT->heading('Проверка подключения к API ГИС СЦОС');
 
-$params = array();
-$params['page'] = $page;
-
-$baseurl = new moodle_url('/local/onlineeduru/index.php', $params);
-
-$renderer = $PAGE->get_renderer('local_onlineeduru');
-
-echo $renderer->courses_table([]);
-
-if (has_capability('local/onlineeduru:manager', $context)) {
-    echo $renderer->single_button(helper::get_create_passport_url(), get_string('createnewcourse', 'local_onlineeduru'));
-}
+$api = new \local_onlineeduru\services\api();
+echo "<pre>". print_r($api->test(), 1) . "</pre>";
 
 echo $OUTPUT->footer();
