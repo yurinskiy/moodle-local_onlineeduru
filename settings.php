@@ -43,7 +43,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configselect(
                 'local_onlineeduru/api_endpoint',
                 get_string('settings_api_endpoint', 'local_onlineeduru'),
-                get_string('settings_api_endpoint_desc', 'local_onlineeduru'),
+                get_string('settings_api_endpoint_help', 'local_onlineeduru'),
                 'https://test.online.edu.ru/api/v2/',
                 [
                     'https://online.edu.ru/api/v2/' => 'API V2 (бой)',
@@ -54,7 +54,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configtext(
                 'local_onlineeduru/api_key',
                 get_string('settings_api_key', 'local_onlineeduru'),
-                get_string('settings_api_key_desc', 'local_onlineeduru'),
+                get_string('settings_api_key_help', 'local_onlineeduru'),
                 '',
                 PARAM_ALPHANUMEXT
             ));
@@ -62,7 +62,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configtext(
                 'local_onlineeduru/partner_id',
                 get_string('settings_partner_id', 'local_onlineeduru'),
-                get_string('settings_partner_id_desc', 'local_onlineeduru'),
+                get_string('settings_partner_id_help', 'local_onlineeduru'),
                 '',
                 PARAM_ALPHANUMEXT
             ));
@@ -70,7 +70,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configtext(
                 'local_onlineeduru/institution',
                 get_string('settings_institution', 'local_onlineeduru'),
-                get_string('settings_institution_desc', 'local_onlineeduru'),
+                get_string('settings_institution_help', 'local_onlineeduru'),
                 '',
                 PARAM_ALPHANUMEXT
             ));
@@ -78,7 +78,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configtext(
                 'local_onlineeduru/client_id',
                 get_string('settings_client_id', 'local_onlineeduru'),
-                get_string('settings_client_id_desc', 'local_onlineeduru'),
+                get_string('settings_client_id_help', 'local_onlineeduru'),
                 '',
                 PARAM_TEXT
             ));
@@ -86,7 +86,7 @@ if ($hassiteconfig) {
             $settings->add(new admin_setting_configtext(
                 'local_onlineeduru/client_secret',
                 get_string('settings_client_secret', 'local_onlineeduru'),
-                get_string('settings_client_secret_desc', 'local_onlineeduru'),
+                get_string('settings_client_secret_help', 'local_onlineeduru'),
                 '',
                 PARAM_ALPHANUM
             ));

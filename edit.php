@@ -31,6 +31,7 @@ require_once(__DIR__ . '/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT);
 $action = optional_param('action', helper::ACTION_CREATE, PARAM_ALPHA);
+$teachercount = optional_param('teachercount', 1, PARAM_INT);
 
 if (!$id && $action !== helper::ACTION_CREATE) {
     throw new \coding_exception('Указан тип отличный от создания паспорта и не указан курс!');
@@ -53,12 +54,16 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:manage', $context)) {
     die();
 }
 
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pluginname', 'local_onlineeduru'));
+
 if (!$id) {
-    $mform = new choose_course_form();
+    $mform = new choose_course_form(helper::get_update_passport_url($id, $action));
 } else {
     $mform = new course_passport_form(helper::get_update_passport_url($id, $action), [
         'course' => get_course($id),
         'version' => helper::get_version_passport($id),
+        'teachercount' => $teachercount,
     ]);
 }
 
@@ -66,15 +71,13 @@ if ($mform->is_cancelled()) {
     redirect(helper::MANAGER_PATH);
 }
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'local_onlineeduru'));
-
 if ($mform instanceof choose_course_form && $data = $mform->get_data()) {
     redirect(helper::get_update_passport_url($data->courseid), 'Заполняем поле паспорта данными из курса, подождите...', 1);
 } else if ($data = $mform->get_data()) {
     echo 'test';
 
 } else {
+    //echo '<pre>'; var_dump($mform);die;
     //$mform->set_data([]);
 
     // Display the form.
