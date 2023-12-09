@@ -35,7 +35,7 @@ class course_passport_updated extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('course_passport_created', 'local_onlineeduru');
+        return get_string('course_passport_updated', 'local_onlineeduru');
     }
 
     /**
@@ -44,7 +44,7 @@ class course_passport_updated extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/local/onlineeduru/view.php', array('id' => $this->contextinstanceid));
+        return new \moodle_url('/local/onlineeduru/view.php', array('id' => $this->courseid));
     }
 }
 

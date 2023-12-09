@@ -23,6 +23,8 @@
 $string['pluginname'] = 'Интеграция с ГИС СЦОС';
 $string['onlineeduru:view'] = 'Просмотр курсов';
 $string['onlineeduru:manage'] = 'Управление курсами';
+$string['course_passport_created'] = 'Создание паспорта для интеграции с ГИС СЦОС';
+$string['course_passport_updated'] = 'Обновление паспорта для интеграции с ГИС СЦОС';
 
 $string['form_header_passport_system'] = 'Технические данные';
 $string['form_field_institution'] = 'Идентификатор Правообладателя';

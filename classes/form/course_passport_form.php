@@ -42,6 +42,7 @@ class course_passport_form extends repeat_elements_moodleform
         $mform->setType('title', PARAM_TEXT);
         $mform->addHelpButton('title', 'form_field_title', 'local_onlineeduru');
         $this->setRequired('title');
+        $mform->addRule('title', 'Количество введённых символов должно быть от 1 до 255', 'rangelength', [1, 255]);
         $mform->setDefault('title', $course->fullname);
 
         // Дата ближайшего запуска
@@ -49,10 +50,10 @@ class course_passport_form extends repeat_elements_moodleform
         $mform->addHelpButton('started_at', 'form_field_started_at', 'local_onlineeduru');
         $this->setRequired('started_at');
         // Дата окончания онлайн-курса
-        $mform->addElement('date_selector', 'finished_at', get_string('form_field_finished_at', 'local_onlineeduru'));
+        $mform->addElement('date_selector', 'finished_at', get_string('form_field_finished_at', 'local_onlineeduru'), array('optional' => true));
         $mform->addHelpButton('finished_at', 'form_field_finished_at', 'local_onlineeduru');
         // Дата окончания записи на онлайн-курс
-        $mform->addElement('date_selector', 'enrollment_finished_at', get_string('form_field_enrollment_finished_at', 'local_onlineeduru'));
+        $mform->addElement('date_selector', 'enrollment_finished_at', get_string('form_field_enrollment_finished_at', 'local_onlineeduru'), array('optional' => true));
         $mform->addHelpButton('enrollment_finished_at', 'form_field_enrollment_finished_at', 'local_onlineeduru');
 
         // Описание онлайн-курса
@@ -89,7 +90,9 @@ class course_passport_form extends repeat_elements_moodleform
         ], [
             'value' => [
                 'type' => PARAM_TEXT,
-                'rule' => [get_string('required'), 'required'],
+                'rule' => [
+                    [get_string('required'), 'required']
+                ],
             ]
         ]);
         // Массив строк – входных требований к обучающемуся
@@ -98,7 +101,9 @@ class course_passport_form extends repeat_elements_moodleform
         ], [
             'value' => [
                 'type' => PARAM_TEXT,
-                'rule' => [get_string('required'), 'required'],
+                'rule' => [
+                    [get_string('required'), 'required']
+                ],
             ]
         ]);
         // Массив идентификаторов направлений в формате: “01.01.06”
@@ -123,7 +128,8 @@ class course_passport_form extends repeat_elements_moodleform
             'display_name' => [
                 'type' => PARAM_TEXT,
                 'rule' => [
-                    [get_string('required'), 'required']
+                    [get_string('required'), 'required'],
+                    ['Количество введённых символов должно быть от 1 до 255', 'rangelength', [1, 255]],
                 ],
                 'helpbutton' => true,
             ],
@@ -148,10 +154,6 @@ class course_passport_form extends repeat_elements_moodleform
     public function validation($data, $files)
     {
         $errors = parent::validation($data, $files);
-
-        if (array_key_exists('title', $data) && mb_strlen($data['title']) > 255) {
-            $errors['title'] = get_string('validation_course_not_exists', 'local_onlineeduru');
-        }
 
         return $errors;
     }

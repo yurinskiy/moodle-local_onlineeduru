@@ -63,7 +63,7 @@ class passport
     /**
      * @var string Язык онлайн-курса
      */
-    public string $language;
+    public string $language = 'ru';
     /**
      * @var bool Возможность получить сертификат
      */
@@ -86,9 +86,9 @@ class passport
      */
     public string $results;
     /**
-     * @var string Аккредитация
+     * @var string|null Аккредитация
      */
-    public string $accreditated;
+    public ?string $accreditated;
     /**
      * @var int|null Объем онлайн-курса, в часах
      */
@@ -128,6 +128,10 @@ class passport
     /**
      * @var int Трудоёмкость курса в з.е.
      */
+    public int $credits;
+    /**
+     * @var int Трудоёмкость курса в з.е.
+     */
     public int $number;
     /**
      * @var string|null Тип(-ы) используемого(-ых) сервиса(-ов) прокторинга (либо перечень через “,”)
@@ -138,4 +142,14 @@ class passport
      */
     public ?string $assessment_description;
 
+    public function __toString() {
+        $obj = clone $this;
+        $keys = get_object_vars($obj);
+        foreach ($keys as $key => $value) {
+            if (!$value) {
+                unset($obj->{$key});
+            }
+        }
+        return json_encode($obj);
+    }
 }

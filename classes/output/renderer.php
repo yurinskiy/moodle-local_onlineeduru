@@ -44,13 +44,15 @@ class renderer extends plugin_renderer_base {
     /**
      * @return string HTML to output.
      */
-    public function courses_table($courses) {
+    public function courses_table($courses, bool $isManager = false ): string
+    {
 
         $table = new html_table();
         $table->head  = [
             get_string('name'),
             get_string('url'),
             get_string('gis_courseid', 'local_onlineeduru'),
+            'Дата отправки',
             get_string('actions'),
         ];
         $table->attributes['class'] = 'admintable generaltable';
@@ -59,23 +61,34 @@ class renderer extends plugin_renderer_base {
         $index = 0;
 
         foreach ($courses as $course) {
+            $passport = json_decode($course->request);
+
             // Name.
-            $name = $course->name;
+            $name = $passport->title;
             $namecell = new html_table_cell(s($name));
             $namecell->header = true;
 
             // Url.
-            $url = $course->url;
+            $url = $passport->external_url;
             $urlcell = new html_table_cell(s($url));
 
-            $gis = $course->gis;
-            $giscell = new html_table_cell(s($url));
+            $gis = $course->gis_courseid;
+            $giscell = new html_table_cell(s($gis));
+
+            $time = $course->timerequest;
+            $timecell = new html_table_cell(s($time));
 
             $links = '';
             // Action links.
-            $editurl = helper::get_update_passport_url($course->id);
-            $editlink = html_writer::link($editurl, $this->pix_icon('t/edit', get_string('edit')));
-            $links .= ' ' . $editlink;
+            $viewurl = helper::get_view_passport_url($course->courseid);
+            $viewlink = html_writer::link($viewurl, $this->pix_icon('t/hide', get_string('view')));
+            $links .= ' ' . $viewlink;
+
+            if ($isManager) {
+                $editurl = helper::get_update_passport_url($course->courseid);
+                $editlink = html_writer::link($editurl, $this->pix_icon('t/edit', get_string('edit')));
+                $links .= ' ' . $editlink;
+            }
 
             $editcell = new html_table_cell($links);
 
@@ -83,6 +96,7 @@ class renderer extends plugin_renderer_base {
                 $namecell,
                 $urlcell,
                 $giscell,
+                $timecell,
                 $editcell,
             ]);
 

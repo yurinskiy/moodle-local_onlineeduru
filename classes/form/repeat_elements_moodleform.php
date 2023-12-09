@@ -52,13 +52,13 @@ abstract class repeat_elements_moodleform extends \moodleform
 
         $cntDeleted = 0;
 
-        for ($i = 0; $i < $cntElements; $i++) {
+        for ($i = 0; $i <= $cntElements; $i++) {
             if ($mform->elementExists("$nameDelete-hidden[$i]")) {
                 $cntDeleted++;
             }
         }
 
-        for ($i = 0; $i < $cntElements; $i++) {
+        for ($i = 0; $i <= $cntElements; $i++) {
             if ($mform->elementExists("{$nameDelete}[$i]")) {
                 $mform->disabledIf("{$nameDelete}[$i]", $nameCount, 'eq', 1 + $cntDeleted);
             }

@@ -27,12 +27,18 @@ global $CFG, $DB, $OUTPUT, $PAGE, $SITE;
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$page = optional_param('page', 0,  PARAM_INT);
+define('DEFAULT_PAGE_SIZE', 20);
+
+$page         = optional_param('page', 0, PARAM_INT); // Which page to show.
+$perpage      = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT); // How many per page.
 
 $systemcontext = $context = context_system::instance();
 
 $PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/index.php'); // Defined here to avoid notices on errors etc.
+$PAGE->set_url('/local/onlineeduru/index.php', array(
+    'page' => $page,
+    'perpage' => $perpage
+)); // Defined here to avoid notices on errors etc.
 $PAGE->set_pagelayout('admin');
 $PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
 $PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
@@ -48,17 +54,27 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
 
 echo $OUTPUT->header();
 
-$params = array();
-$params['page'] = $page;
-
-$baseurl = new moodle_url('/local/onlineeduru/index.php', $params);
-
 $renderer = $PAGE->get_renderer('local_onlineeduru');
 
-echo $renderer->courses_table([]);
+$baseurl = new moodle_url('/local/onlineeduru/index.php', [
+    'page' => $page,
+    'perpage' => $perpage
+]);
 
-if (has_capability('local/onlineeduru:manager', $context)) {
+$isManager = has_capability('local/onlineeduru:manager', $context);
+
+$courses = \local_onlineeduru\services\db::list([], $page, $perpage);
+
+// Output pagination bar.
+echo $OUTPUT->paging_bar($courses['total'], $page, $perpage, $baseurl);
+
+echo $renderer->courses_table($courses['data'], $isManager);
+
+echo $OUTPUT->paging_bar($courses['total'], $page, $perpage, $baseurl);
+
+if ($isManager) {
     echo $renderer->single_button(helper::get_create_passport_url(), get_string('createnewcourse', 'local_onlineeduru'));
 }
+
 
 echo $OUTPUT->footer();

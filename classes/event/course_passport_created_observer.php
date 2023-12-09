@@ -22,6 +22,9 @@ class course_passport_created_observer
 {
     public static function store(course_passport_created $event): void
     {
+        $api = new \local_onlineeduru\services\api();
+        echo "<pre>". print_r($api->test(), 1) . "</pre>";
+        echo "<pre>". print_r($event, 1) . "</pre>";
 
     }
 }

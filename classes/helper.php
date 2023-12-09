@@ -33,6 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 class helper
 {
     const MANAGER_PATH = '/local/onlineeduru/index.php';
+    const VIEW_PATH = '/local/onlineeduru/view.php';
     const EDIT_PATH = '/local/onlineeduru/edit.php';
     const TEST_CONNECTION_PATH = '/local/onlineeduru/test.php';
     public const ACTION_CREATE = 'create';
@@ -44,6 +45,14 @@ class helper
 
     public static function get_update_passport_url(int $courseid, string $action = self::ACTION_CREATE) : moodle_url {
         return new moodle_url(self::EDIT_PATH, ['id' => $courseid, 'action' => $action]);
+    }
+
+    public static function get_view_passport_url(int $courseid) : moodle_url {
+        return new moodle_url(self::VIEW_PATH, ['id' => $courseid]);
+    }
+
+    public static function get_passports() : moodle_url {
+        return new moodle_url(self::MANAGER_PATH);
     }
 
     public static function get_version_passport($courseid): int {
