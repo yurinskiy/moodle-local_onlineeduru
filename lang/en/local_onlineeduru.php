@@ -42,14 +42,8 @@ $string['form_field_description'] = 'Описание онлайн-курса';
 $string['form_field_description_help'] = 'Например: Ядерная физика является одним из основных разделов физики, связанных с описанием свойств материи.';
 $string['form_field_image'] = 'Ссылка на изображение';
 $string['form_field_image_help'] = 'Например: https://online.edu.ru/static/courses/i/01.01/course/11.jpg';
-$string['form_field_competences'] = 'Строка с набором компетенций. Для разделения строк по позициям необходимо использовать \n';
-$string['form_field_competences_help'] = 'Например: Компетенция 1 \n Компетенция 2';
-$string['form_field_requirements'] = 'Массив строк – входных требований к обучающемуся';
-$string['form_field_requirements_help'] = 'Массив строк – входных требований к обучающемуся';
 $string['form_field_content'] = 'Содержание онлайн-курса';
 $string['form_field_content_help'] = 'Например: <ul><li>Модуль 1. Общие свойства ядер</li></ul>';
-$string['form_field_direction'] = 'Массив идентификаторов направлений в формате: “01.01.06”';
-$string['form_field_direction_help'] = 'Например: “01.01.06”';
 $string['form_field_lectures_number'] = 'Количество лекций';
 $string['form_field_lectures_number_help'] = 'Например: 12';
 $string['form_field_cert'] = 'Возможность получить сертификат';
@@ -58,6 +52,12 @@ $string['form_field_results'] = 'Результаты обучения';
 $string['form_field_results_help'] = 'Результаты обучения';
 $string['form_field_credits'] = 'Трудоёмкость курса в з.е.';
 $string['form_field_credits_help'] = 'Например: 5';
+$string['form_field_hours'] = 'Объем онлайн-курса в часах';
+$string['form_field_hours_help'] = 'Например: 72';
+$string['form_field_duration'] = 'Длительность онлайн-курса';
+$string['form_field_duration_help'] = 'Например: 5 недель';
+$string['form_field_duration_code'] = 'Код вида длительности';
+$string['form_field_duration_value'] = 'Длительность курса';
 
 $string['form_header_course_teachers'] = 'Лекторы курса';
 $string['form_field_teacher_display_name'] = 'ФИО лектора';
@@ -67,6 +67,39 @@ $string['form_field_teacher_image_help'] = 'Например: https://online.edu
 $string['form_field_teacher_description'] = 'Описание лектора';
 $string['form_field_teacher_description_help'] = 'Например: Кандидат педагогических наук, доцент.';
 $string['form_field_teacher_delete'] = 'Удалить лектора';
+
+$string['form_header_competence-array'] = 'Компетенций';
+$string['form_field_competence-title'] = 'Компетенция №{$a}';
+$string['form_field_competence-value'] = 'Описание компетенции';
+$string['form_field_competence-value_help'] = 'Например: Компетенция 1';
+$string['form_field_competence-delete'] = 'Удалить компетенцию';
+$string['form_field_competence-add'] = 'Добавить компетенцию';
+
+$string['form_header_requirement-array'] = 'Требование у обучающемуся';
+$string['form_field_requirement-title'] = 'Требование №{$a}';
+$string['form_field_requirement-value'] = 'Описание требования';
+$string['form_field_requirement-value_help'] = 'Например: Знание русского языка';
+$string['form_field_requirement-delete'] = 'Удалить требование';
+$string['form_field_requirement-add'] = 'Добавить требование';
+
+$string['form_header_direction-array'] = 'Направления';
+$string['form_field_direction-title'] = 'Направление №{$a}';
+$string['form_field_direction-value'] = 'Направление в формате "01.01.01"';
+$string['form_field_direction-value_help'] = 'Например: 01.01.01';
+$string['form_field_direction-delete'] = 'Удалить требование';
+$string['form_field_direction-add'] = 'Добавить требование';
+
+$string['form_header_teacher-array'] = 'Лекторы';
+$string['form_field_teacher-title'] = 'Лектор №{$a}';
+$string['form_field_teacher-display_name'] = 'ФИО лектора';
+$string['form_field_teacher-display_name_help'] = 'Например: Иванов Иван Иванович';
+$string['form_field_teacher-image'] = 'Ссылка на изображение лектора';
+$string['form_field_teacher-image_help'] = 'Например: https://online.edu.ru/static/courses/i/01.01/rating/2.jpg';
+$string['form_field_teacher-description'] = 'Описание лектора';
+$string['form_field_teacher-description_help'] = 'Например: Кандидат педагогических наук, доцент.';
+$string['form_field_teacher-delete'] = 'Удалить требование';
+$string['form_field_teacher-add'] = 'Добавить требование';
+
 
 $string['validation_course_not_exists'] = 'Курс не найден';
 

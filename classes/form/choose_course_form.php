@@ -10,13 +10,10 @@ class choose_course_form extends \moodleform
     protected function definition() {
         $mform = $this->_form;
 
-        $strrequired = get_string('required');
-
         $mform->_attributes['style'] = 'height:400px';
 
-        $options = ['multiple' => false, 'includefrontpage' => false];
-        $mform->addElement('course', 'courseid', get_string('courses'), $options);
-        $mform->addRule('courseid', $strrequired, 'required', null, 'client');
+        $mform->addElement('course', 'courseid', get_string('courses'), ['multiple' => false, 'includefrontpage' => false]);
+        $mform->addRule('courseid', get_string('required'), 'required');
 
         $this->add_action_buttons(true, get_string('next', 'local_onlineeduru'));
     }
@@ -24,13 +21,13 @@ class choose_course_form extends \moodleform
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        $strrequired = get_string('required');
-
-        if (!array_key_exists('courseid', $errors) && empty($data['courseid'])) {
-            $errors['courseid'] = $strrequired;
-        }
-        if (!array_key_exists('courseid', $errors) && !$this->get_course($data['courseid'])) {
+        if (!array_key_exists('courseid', $errors) && $data['courseid'] && !get_course($data['courseid'])) {
             $errors['courseid'] = get_string('validation_course_not_exists', 'local_onlineeduru');
+        }
+
+
+        if (!array_key_exists('courseid', $errors) && $data['courseid'] && $this->get_pasport_course($data['courseid'])) {
+            $errors['courseid'] = 'Данный курс уже зарегистрирован в системе';
         }
 
         return $errors;
@@ -40,5 +37,11 @@ class choose_course_form extends \moodleform
         global $DB;
 
         return $DB->get_record('course', array('id' => $courseid));
+    }
+
+    public function get_pasport_course($courseid) {
+        global $DB;
+
+        return $DB->get_record('local_onlineeduru_course', array('courseid' => $courseid));
     }
 }

@@ -5,6 +5,7 @@ namespace local_onlineeduru\services;
 class api
 {
     const METHOD_TEST = '/connections/check';
+    const METHOD_CREATE_COURSE = '/';
 
     const HEADER_KEY = 'X-CN-UUID';
 
@@ -34,14 +35,17 @@ class api
         return $this->curl->get($url);
     }
 
-    public function getInfo()
+    public function createCourse($data): void
     {
-        return $this->curl->get_info();
+
     }
 
-    public function getResponse()
+    private function getDefaultHeader(): array
     {
-        return $this->curl->get_raw_response();
+        return [
+            'Accept: */*',
+            sprintf('%s: %s', self::HEADER_KEY, $this->key)
+        ];
     }
 
     private function getUrlMethod(string $method): string
@@ -53,13 +57,5 @@ class api
         }
 
         return $url . $method;
-    }
-
-    private function getDefaultHeader(): array
-    {
-        return [
-            'Accept: */*',
-            sprintf('%s: %s', self::HEADER_KEY, $this->key)
-        ];
     }
 }

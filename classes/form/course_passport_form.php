@@ -2,21 +2,15 @@
 
 namespace local_onlineeduru\form;
 
-global $CFG;
-
 use core_course_list_element;
-use MoodleQuickForm;
 
-require_once($CFG->libdir . '/formslib.php');
-
-class course_passport_form extends \moodleform
+class course_passport_form extends repeat_elements_moodleform
 {
     protected function definition()
     {
         $mform = $this->_form;
         $customdata = $this->_customdata;
         $course = $customdata['course'];
-        $repeatno = $customdata['teachercount'];
 
         if ($course instanceof \stdClass) {
             $course = new core_course_list_element($course);
@@ -47,13 +41,13 @@ class course_passport_form extends \moodleform
         $mform->addElement('text', 'title', get_string('form_field_title', 'local_onlineeduru'), ['size' => '255']);
         $mform->setType('title', PARAM_TEXT);
         $mform->addHelpButton('title', 'form_field_title', 'local_onlineeduru');
-        $mform->addRule('title', get_string('required'), 'required');
+        $this->setRequired('title');
         $mform->setDefault('title', $course->fullname);
 
         // Дата ближайшего запуска
         $mform->addElement('date_selector', 'started_at', get_string('form_field_started_at', 'local_onlineeduru'));
         $mform->addHelpButton('started_at', 'form_field_started_at', 'local_onlineeduru');
-        $mform->addRule('started_at', get_string('required'), 'required');
+        $this->setRequired('started_at');
         // Дата окончания онлайн-курса
         $mform->addElement('date_selector', 'finished_at', get_string('form_field_finished_at', 'local_onlineeduru'));
         $mform->addHelpButton('finished_at', 'form_field_finished_at', 'local_onlineeduru');
@@ -71,77 +65,82 @@ class course_passport_form extends \moodleform
         $mform->addElement('text', 'image', get_string('form_field_image', 'local_onlineeduru'), ['size' => '255']);
         $mform->setType('image', PARAM_URL);
         $mform->addHelpButton('image', 'form_field_image', 'local_onlineeduru');
-        $mform->addRule('image', get_string('required'), 'required');
+        $this->setRequired('image');
         $mform->setDefault('image', local_onlineeduru_get_course_image_url($course));
 
-        // Строка с набором компетенций. Для разделения строк по позициям необходимо использовать \n
-        $mform->addElement('textarea', 'competences', get_string('form_field_competences', 'local_onlineeduru'), ['style' => 'width:100%']);
-        $mform->addHelpButton('competences', 'form_field_competences', 'local_onlineeduru');
-        // Массив строк – входных требований к обучающемуся
-        $mform->addElement('textarea', 'requirements', get_string('form_field_requirements', 'local_onlineeduru'), ['style' => 'width:100%']);
-        $mform->addHelpButton('requirements', 'form_field_requirements', 'local_onlineeduru');
         // Содержание онлайн-курса
         $mform->addElement('textarea', 'content', get_string('form_field_content', 'local_onlineeduru'), ['style' => 'width:100%']);
-        $mform->addHelpButton('requirements', 'form_field_requirements', 'local_onlineeduru');
-        // Массив идентификаторов направлений в формате: “01.01.06”
-        $mform->addElement('text', 'direction', get_string('form_field_direction', 'local_onlineeduru'), ['size' => '255']);
-        $mform->setType('direction', PARAM_TEXT);
-        $mform->addHelpButton('direction', 'form_field_direction', 'local_onlineeduru');
-        // Количество лекций
-        $mform->addElement('float', 'lectures_number', get_string('form_field_lectures_number', 'local_onlineeduru'), ['size' => '255']);
-        $mform->addHelpButton('lectures_number', 'form_field_lectures_number', 'local_onlineeduru');
+        $mform->addHelpButton('content', 'form_field_content', 'local_onlineeduru');
         // Возможность получить сертификат
         $mform->addElement('select', 'cert', get_string('form_field_cert', 'local_onlineeduru'), [
             false => 'Нет',
             true => 'Да',
         ]);
+        $this->setRequired('cert');
         $mform->addHelpButton('cert', 'form_field_cert', 'local_onlineeduru');
 
         // Результаты обучения
         $mform->addElement('textarea', 'results', get_string('form_field_results', 'local_onlineeduru'), ['style' => 'width:100%']);
-        // Трудоёмкость курса в з.е.
-        $mform->addElement('float', 'credits', get_string('form_field_credits', 'local_onlineeduru'), ['size' => '255']);
+        $this->setRequired('results');
 
+        // Строка с набором компетенций. Для разделения строк по позициям необходимо использовать \n
+        $this->addRepeatElements('competence', [
+            'value' => 'text'
+        ], [
+            'value' => [
+                'type' => PARAM_TEXT,
+                'rule' => [get_string('required'), 'required'],
+            ]
+        ]);
+        // Массив строк – входных требований к обучающемуся
+        $this->addRepeatElements('requirement', [
+            'value' => 'text'
+        ], [
+            'value' => [
+                'type' => PARAM_TEXT,
+                'rule' => [get_string('required'), 'required'],
+            ]
+        ]);
+        // Массив идентификаторов направлений в формате: “01.01.06”
+        $this->addRepeatElements('direction', [
+            'value' => 'text'
+        ], [
+            'value' => [
+                'type' => PARAM_TEXT,
+                'rule' => [
+                    [get_string('required'), 'required'],
+                    ['Не соответствует маске', 'regex', '/[0-9]{2}\.[0-9]{2}\.[0-9]{2}/'],
+                ],
+            ]
+        ]);
 
-        $mform->addElement('header', 'course_teachers', get_string('form_header_course_teachers', 'local_onlineeduru'));
+        // Лекторы
+        $this->addRepeatElements('teacher', [
+            'display_name' => 'text',
+            'image' => 'text',
+            'description' => 'text'
+        ], [
+            'display_name' => [
+                'type' => PARAM_TEXT,
+                'rule' => [
+                    [get_string('required'), 'required']
+                ],
+                'helpbutton' => true,
+            ],
+            'image' => [
+                'type' => PARAM_URL,
+                'rule' => [
+                    [get_string('required'), 'required']
+                ],
+                'helpbutton' => true,
+            ],
+            'description' => [
+                'type' => PARAM_TEXT,
+                'helpbutton' => true,
+            ]
+        ]);
 
-        $mform->registerNoSubmitButton('teacher_delete');
-        // The fields to create the grade letter/boundary.
-        $elements = [];
-        $elements[] = $mform->createElement('static', 'teacher_name', 'Лектор {no}');
-        $elements[] = $mform->createElement('text', 'teacher_display_name', get_string('form_field_teacher_display_name', 'local_onlineeduru'));
-        $elements[] = $mform->createElement('text', 'teacher_image', get_string('form_field_teacher_image', 'local_onlineeduru'));
-        $elements[] = $mform->createElement('text', 'teacher_description', get_string('form_field_teacher_description', 'local_onlineeduru'));
-        $elements[] = $mform->createElement('submit', 'teacher_delete', get_string('form_field_teacher_delete', 'local_onlineeduru'), [], false);
-
-
-        // Element options/rules, fields should be disabled unless "Override" is checked for course grade letters.
-        $options = [];
-        $options['teacher_display_name']['type'] = PARAM_TEXT;
-        $options['teacher_image']['type'] = PARAM_URL;
-        $options['teacher_description']['type'] = PARAM_TEXT;
-
-        // Create our repeatable elements, each one a group comprised of the fields defined previously.
-        $this->repeat_elements(
-            $elements,
-            $repeatno,
-            $options,
-            'teachercount',
-            'teachertryadd',
-            1,
-            'Добавить лектора',
-            true,
-            'teacher_delete'
-        );
-
-        for ($i = 0; $i <= $repeatno; $i++) {
-            if ($mform->elementExists("teacher_display_name[$i]")) {
-                $mform->addRule("teacher_display_name[$i]", get_string('required'), 'required');
-            }
-            if ($mform->elementExists("teacher_image[$i]")) {
-                $mform->addRule("teacher_image[$i]", get_string('required'), 'required');
-            }
-        }
+        $this->addTimes();
 
         $this->add_action_buttons();
     }
@@ -155,5 +154,39 @@ class course_passport_form extends \moodleform
         }
 
         return $errors;
+    }
+
+    protected function setRequired(string $element): void
+    {
+        $this->_form->addRule($element, get_string('required'), 'required');
+    }
+
+    protected function addTimes()
+    {
+        $mform = $this->_form;
+
+        $mform->addElement('header', 'times', 'Продолжительность курса');
+
+        // Длительность онлайн-курса в неделях
+        $mform->addElement('static', 'duration', get_string('form_field_duration', 'local_onlineeduru'));
+        $mform->addHelpButton('duration', 'form_field_duration', 'local_onlineeduru');
+        $mform->addElement('text', 'duration_value', get_string('form_field_duration_value', 'local_onlineeduru'));
+        $mform->setType('duration_value', PARAM_TEXT);
+        $this->setRequired('duration_value');
+        $mform->addElement('select', 'duration_code', get_string('form_field_duration_code', 'local_onlineeduru'), ['week' => 'недель']);
+        $this->setRequired('duration_code');
+
+
+        $mform->addElement('html', '<hr>');
+
+
+        // Трудоёмкость курса в з.е.
+        $mform->addElement('text', 'credits', get_string('form_field_credits', 'local_onlineeduru'), ['size' => '255']);
+        $mform->setType('credits', PARAM_TEXT);
+        $this->setRequired('credits');
+
+        // Объем онлайн-курса в часах
+        $mform->addElement('text', 'hours', get_string('form_field_hours', 'local_onlineeduru'), ['size' => '255']);
+        $mform->setType('hours', PARAM_TEXT);
     }
 }
