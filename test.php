@@ -27,12 +27,6 @@ require_once($CFG->libdir . '/adminlib.php');
 
 $systemcontext = $context = context_system::instance();
 
-$PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/test.php');
-$PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
-$PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
-
 /** Проверяем авторизован ли пользователь */
 require_login();
 
@@ -41,6 +35,12 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:manager', $context)) {
     header('Location: ' . $CFG->wwwroot);
     die();
 }
+
+$PAGE->set_context($context);
+$PAGE->set_url('/local/onlineeduru/test.php');
+$PAGE->set_pagelayout('admin');
+$PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
+$PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading('Проверка подключения к API ГИС СЦОС');

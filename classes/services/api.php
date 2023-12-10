@@ -5,7 +5,8 @@ namespace local_onlineeduru\services;
 class api
 {
     const METHOD_TEST = '/connections/check';
-    const METHOD_CREATE_COURSE = '/';
+    const METHOD_CREATE_COURSE = '/registry/courses';
+    const METHOD_UPDATE_COURSE = '/registry/courses';
 
     const HEADER_KEY = 'X-CN-UUID';
 
@@ -23,7 +24,16 @@ class api
         $this->partner_id = get_config('local_onlineeduru', 'partner_id');
         $this->institution = get_config('local_onlineeduru', 'institution');
 
-        $this->curl = new \curl();
+        $this->curl = new \curl(['debug' => true]);
+    }
+
+    public function getStatus()
+    {
+        $info = $this->curl->get_info();
+
+        $code = $info['http_code'] ?? '';
+
+        return mb_strlen($code) > 3 ? mb_substr($code, 0, 3) : $code;
     }
 
     public function test()
@@ -35,9 +45,29 @@ class api
         return $this->curl->get($url);
     }
 
-    public function createCourse($data): void
+    public function createCourse(string $data)
     {
+        $url = $this->getUrlMethod(self::METHOD_CREATE_COURSE);
 
+        $this->curl->setHeader($this->getDefaultHeader());
+        $this->curl->setHeader(['Content-type: application/json']);
+        $this->curl->setHeader(['Accept: application/json']);
+
+        $request_body = sprintf('{"partner_id":"%s", "package": { "items": [%s] } }', $this->partner_id, $data);
+
+        return $this->curl->post($url, $request_body);
+    }
+    public function updateCourse(string $data)
+    {
+        $url = $this->getUrlMethod(self::METHOD_UPDATE_COURSE);
+
+        $this->curl->setHeader($this->getDefaultHeader());
+        $this->curl->setHeader(['Content-type: application/json']);
+        $this->curl->setHeader(['Accept: application/json']);
+
+        $request_body = sprintf('{"partner_id":"%s", "package": { "items": [%s] } }', $this->partner_id, $data);
+
+        return $this->curl->put($url, $request_body);
     }
 
     private function getDefaultHeader(): array

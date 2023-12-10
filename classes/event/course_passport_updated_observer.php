@@ -16,14 +16,25 @@
 
 namespace local_onlineeduru\event;
 
+use local_onlineeduru\services\db;
+
 defined('MOODLE_INTERNAL') || die();
 
 class course_passport_updated_observer
 {
     public static function store(course_passport_updated $event): void
     {
+        $course = $event->courseid;
+
+        $request = db::getPassportForRequest($course);
+
+        echo "<pre>". print_r($request, 1) . "</pre>";
+
         $api = new \local_onlineeduru\services\api();
-        echo "<pre>". print_r($api->test(), 1) . "</pre>";
-        echo "<pre>". print_r($event, 1) . "</pre>";
+        $response = $api->updateCourse($request);
+
+        echo "<pre>". print_r($response, 1) . "</pre>";
+
+        db::saveResponse($course, $api->getStatus(), $response);
     }
 }

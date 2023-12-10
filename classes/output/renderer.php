@@ -28,9 +28,7 @@ use html_table_cell;
 use html_table_row;
 use html_writer;
 use local_onlineeduru\helper;
-use moodle_url;
 use plugin_renderer_base;
-use renderable;
 
 /**
  * Renderer class for 'local_onlineeduru' component.
@@ -75,7 +73,7 @@ class renderer extends plugin_renderer_base {
             $gis = $course->gis_courseid;
             $giscell = new html_table_cell(s($gis));
 
-            $time = $course->timerequest;
+            $time = userdate($course->timerequest);
             $timecell = new html_table_cell(s($time));
 
             $links = '';
@@ -85,7 +83,7 @@ class renderer extends plugin_renderer_base {
             $links .= ' ' . $viewlink;
 
             if ($isManager) {
-                $editurl = helper::get_update_passport_url($course->courseid);
+                $editurl = helper::get_update_passport_url($course->courseid, helper::ACTION_UPDATE);
                 $editlink = html_writer::link($editurl, $this->pix_icon('t/edit', get_string('edit')));
                 $links .= ' ' . $editlink;
             }

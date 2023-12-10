@@ -119,4 +119,52 @@ class db
 
         return $passportdb->id;
     }
+
+    public static function getPassportForRequest(int $courseid): string
+    {
+        global $DB, $USER;
+        $transaction = $DB->start_delegated_transaction();
+        $timenow = time();
+
+        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id, request', MUST_EXIST);
+        $passportdb->timerequest = $timenow;
+        $passportdb->timemodified = $timenow;
+        $passportdb->usermodified = $USER->id;
+        $DB->update_record('local_onlineeduru_passport', $passportdb);
+
+        $transaction->allow_commit();
+
+        return $passportdb->request;
+    }
+
+    public static function saveResponse(int $courseid, $status, $response)
+    {
+        global $DB, $USER;
+        $transaction = $DB->start_delegated_transaction();
+        $timenow = time();
+
+        try {
+            $data = json_decode($response, true);
+        } catch (\Throwable $e) {
+            debugging("Ошибка при разборе response: {$e->getMessage()}");
+            $data = [];
+        }
+
+        $coursedb = $DB->get_record('local_onlineeduru_course', ['courseid' => $courseid], 'id', MUST_EXIST);
+        $coursedb->timemodified = $timenow;
+        $coursedb->usermodified = $USER->id;
+        $coursedb->gis_courseid = $data['course_id'] ?? null;
+        $DB->update_record('local_onlineeduru_course', $coursedb);
+
+        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id', MUST_EXIST);
+        $passportdb->response = $response;
+        $passportdb->statusresponse = $status;
+        $passportdb->timeresponse = $timenow;
+        $passportdb->timemodified = $timenow;
+        $passportdb->usermodified = $USER->id;
+        $DB->update_record('local_onlineeduru_passport', $passportdb);
+
+        $transaction->allow_commit();
+    }
+
 }

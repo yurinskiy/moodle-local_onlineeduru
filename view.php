@@ -27,14 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
 
-$course = $DB->get_record('local_onlineeduru_course', ['courseid' => $id], '*', MUST_EXIST);
-$systemcontext = $context = context_course::instance($id);
-
-$PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/view.php', ['id' => $id]); // Defined here to avoid notices on errors etc.
-$PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
-$PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
+$systemcontext = $context = context_system::instance();
 
 /** Проверяем авторизован ли пользователь */
 require_login();
@@ -45,12 +38,21 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
     die();
 }
 
+$course = $DB->get_record('local_onlineeduru_course', ['courseid' => $id], '*', MUST_EXIST);
+
+$PAGE->set_context($context);
+$PAGE->set_url('/local/onlineeduru/view.php', ['id' => $id]); // Defined here to avoid notices on errors etc.
+$PAGE->set_pagelayout('admin');
+$PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
+$PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
+
 echo $OUTPUT->header();
+echo $OUTPUT->heading('Просмотр паспорта курса');
 
 $passport = \local_onlineeduru\services\db::get($id);
 
 echo '<pre>' . print_r($passport,1 ) . '</pre>';
 
-local_onlineeduru\event\course_passport_created::create(['context' => $context, 'objectid' => $passport->passportid, 'courseid' => $passport->courseid])->trigger();
+//local_onlineeduru\event\course_passport_created::create(['context' => context_course::instance($id), 'objectid' => $passport->passportid, 'courseid' => $passport->courseid])->trigger();
 
 echo $OUTPUT->footer();

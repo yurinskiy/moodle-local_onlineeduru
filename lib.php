@@ -48,7 +48,7 @@ function local_onlineeduru_extend_settings_navigation(settings_navigation $nav, 
     $mainnode = navigation_node::create(
         $mainstr,
         $url,
-        navigation_node::TYPE_SETTING,
+        navigation_node::TYPE_CUSTOM,
         'onlineeduru',
         'onlineeduru',
 
@@ -70,8 +70,7 @@ function local_onlineeduru_extend_settings_navigation(settings_navigation $nav, 
             navigation_node::TYPE_SETTING,
             'onlineeduru_test_connection',
             'onlineeduru_test_connection',
-
-            new pix_icon('t/sendmessage', $mainstr)
+            new pix_icon('t/sendmessage', $teststr)
         );
 
 
@@ -80,6 +79,54 @@ function local_onlineeduru_extend_settings_navigation(settings_navigation $nav, 
         }
 
         $settingnode->add_node($testnode);
+
+        $addstr = 'Добавление паспорта курса';
+        $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_CREATE, 'id' => $PAGE->url->get_param('id')]);
+
+        if ($PAGE->url->compare($url, URL_MATCH_PARAMS)) {
+            $addnode = navigation_node::create(
+                $addstr,
+                $PAGE->url,
+                navigation_node::TYPE_CUSTOM,
+                'onlineeduru_add_passport',
+                'onlineeduru_add_passport',
+                new pix_icon('t/add', $addstr)
+            );
+            $addnode->make_active();
+            $mainnode->add_node($addnode);
+        }
+
+        $editstr = 'Редактирование паспорта курса';
+        $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_UPDATE, 'id' => $PAGE->url->get_param('id')]);
+        if ($PAGE->url->compare($url, URL_MATCH_PARAMS)) {
+            $editnode = navigation_node::create(
+                $editstr,
+                $PAGE->url,
+                navigation_node::TYPE_CUSTOM,
+                'onlineeduru_edit_passport',
+                'onlineeduru_edit_passport',
+                new pix_icon('t/edit', $editstr)
+            );
+            $editnode->make_active();
+            $editnode->hidden = true;
+            $mainnode->add_node($editnode);
+        }
+
+        $viewstr = 'Просмотр паспорта курса';
+        $url = new moodle_url('/local/onlineeduru/view.php');
+        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+            $viewnode = navigation_node::create(
+                $viewstr,
+                $PAGE->url,
+                navigation_node::TYPE_CUSTOM,
+                'onlineeduru_view_passport',
+                'onlineeduru_view_passport',
+                new pix_icon('t/hide', $viewstr)
+            );
+            $viewnode->make_active();
+            $viewnode->hidden = true;
+            $mainnode->add_node($viewnode);
+        }
     }
 }
 
