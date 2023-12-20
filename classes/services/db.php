@@ -2,7 +2,8 @@
 
 namespace local_onlineeduru\services;
 
-use local_onlineeduru\event\course_passport_created;
+use core\event\user_enrolment_created;
+use core\uuid;
 use local_onlineeduru\helper;
 use local_onlineeduru\model\passport;
 
@@ -167,4 +168,34 @@ class db
         $transaction->allow_commit();
     }
 
+    public static function createParticipation(user_enrolment_created $event, ?string $gis_courseid, ?string $gis_userid): void
+    {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        $_participation = new \stdClass();
+        $_participation->courseid = $event->courseid;
+        $_participation->gis_courseid = $gis_courseid;
+        $_participation->userid = $event->userid;
+        $_participation->gis_userid = $gis_userid;
+        $_participation->sessionid = uuid::generate();
+        $_participation->timecreated = time();
+
+        $DB->insert_record('local_onlineeduru_user', $_participation);
+
+        $transaction->allow_commit();
+    }
+
+    public static function deleteParticipation($participation): void
+    {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        $participation->timedeleted = time();
+        $DB->update_record('local_onlineeduru_user', $participation);
+
+        $transaction->allow_commit();
+    }
 }

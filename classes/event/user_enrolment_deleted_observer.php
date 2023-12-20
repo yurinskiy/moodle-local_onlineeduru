@@ -14,17 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package   local_onlineeduru
- * @copyright 2023, Yuriy Yurinskiy <yuriyyurinskiy@yandex.ru>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace local_onlineeduru\event;
+
+use core\event\user_enrolment_deleted;
+use local_onlineeduru\services\db;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023121001;
-$plugin->requires = 2021051700.00; // Moodle 3.11.
-$plugin->supported = [311, 400];
-$plugin->incompatible = 401;
-$plugin->component = 'local_onlineeduru';
-$plugin->maturity = MATURITY_ALPHA;
+class user_enrolment_deleted_observer
+{
+    public static function store(user_enrolment_deleted $event): void
+    {
+        global $DB;
+
+        $participation = $DB->get_record('local_onlineeduru_user', ['courseid' => $event->courseid, 'userid' => $event->userid, 'timedeleted' => null]);
+
+        echo '<pre>'.print_r($participation, true);
+
+        if (!$participation) {
+            return;
+        }
+
+        db::deleteParticipation($participation);
+    }
+}

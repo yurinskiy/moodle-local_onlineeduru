@@ -25,4 +25,14 @@ $observers = [
         'callback'  => '\local_onlineeduru\event\course_passport_updated_observer::store',
         'priority'  => 1000,
     ],
+    [
+        'eventname' => '\core\event\user_enrolment_created',
+        'callback'  => '\local_onlineeduru\event\user_enrolment_created_observer::store',
+        'priority'  => 9999,
+    ],
+    [
+        'eventname' => '\core\event\user_enrolment_deleted',
+        'callback'  => '\local_onlineeduru\event\user_enrolment_deleted_observer::store',
+        'priority'  => 9999,
+    ],
 ];

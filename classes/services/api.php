@@ -7,6 +7,8 @@ class api
     const METHOD_TEST = '/connections/check';
     const METHOD_CREATE_COURSE = '/registry/courses';
     const METHOD_UPDATE_COURSE = '/registry/courses';
+    const METHOD_GET_USER_ID = '/users/id';
+    const METHOD_USER_PARTICIPATION = '/courses/participation';
 
     const HEADER_KEY = 'X-CN-UUID';
 
@@ -69,6 +71,36 @@ class api
 
         return $this->curl->put($url, $request_body);
     }
+
+    public function getUserID(string $email) {
+
+        $url = $this->getUrlMethod(self::METHOD_GET_USER_ID);
+
+        $this->curl->setHeader($this->getDefaultHeader());
+
+        $response = $this->curl->get($url, ['email' => $email]);
+
+        try {
+            $data = json_decode($response, true);
+        } catch (\Throwable $e) {
+            debugging("Ошибка при разборе response: {$e->getMessage()}");
+            $data = [];
+        }
+
+        return $data['user_id'] ?? null;
+    }
+
+    public function createUser(string $data)
+    {
+        $url = $this->getUrlMethod(self::METHOD_USER_PARTICIPATION);
+
+        $this->curl->setHeader($this->getDefaultHeader());
+        $this->curl->setHeader(['Content-type: application/json']);
+        $this->curl->setHeader(['Accept: application/json']);
+
+        return $this->curl->post($url, $data);
+    }
+
 
     private function getDefaultHeader(): array
     {
