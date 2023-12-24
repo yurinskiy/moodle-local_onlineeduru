@@ -35,4 +35,9 @@ $observers = [
         'callback'  => '\local_onlineeduru\event\user_enrolment_deleted_observer::store',
         'priority'  => 9999,
     ],
+    [
+        'eventname' => '\core\event\user_graded',
+        'callback'  => '\local_onlineeduru\event\user_graded_observer::store',
+        'priority'  => 9999,
+    ],
 ];

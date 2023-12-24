@@ -11,6 +11,7 @@ class api
     const METHOD_UPDATE_COURSE = '/registry/courses';
     const METHOD_GET_USER_ID = '/users/id';
     const METHOD_USER_PARTICIPATION = '/courses/participation';
+    const METHOD_USER_RESULTS = '/courses/results';
 
     const HEADER_KEY = 'X-CN-UUID';
 
@@ -101,7 +102,17 @@ class api
     {
         $url = $this->getUrlMethod(self::METHOD_USER_PARTICIPATION);
 
-        return $this->request($url, 'delete', $data, [], [
+        return $this->request($url, 'delete', [], ['CURLOPT_POSTFIELDS' => $data], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
+    }
+
+    public function sendCheckpoint(string $key, string $data)
+    {
+        $url = $this->getUrlMethod(self::METHOD_USER_RESULTS);
+
+        return $this->request($url, 'post', $data, [], [
             'Content-type: application/json',
             'Accept: application/json'
         ], $key);
