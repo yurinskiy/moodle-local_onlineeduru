@@ -48,4 +48,6 @@ echo $OUTPUT->heading('Проверка подключения к API ГИС С�
 $api = new \local_onlineeduru\services\api();
 echo "<pre>". print_r($api->test(), 1) . "</pre>";
 
+echo "<pre>". print_r($api->getUserID(core_user::get_user($USER->id)->email), 1) . "</pre>";
+
 echo $OUTPUT->footer();

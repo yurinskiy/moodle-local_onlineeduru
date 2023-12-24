@@ -2,6 +2,8 @@
 
 namespace local_onlineeduru\services;
 
+use core\uuid;
+
 class api
 {
     const METHOD_TEST = '/connections/check';
@@ -26,10 +28,10 @@ class api
         $this->partner_id = get_config('local_onlineeduru', 'partner_id');
         $this->institution = get_config('local_onlineeduru', 'institution');
 
-        $this->curl = new \curl(['debug' => true]);
+        $this->curl = new \curl(['debug' => false]);
     }
 
-    public function getStatus()
+    public function getStatus(): string
     {
         $info = $this->curl->get_info();
 
@@ -42,43 +44,38 @@ class api
     {
         $url = $this->getUrlMethod(self::METHOD_TEST);
 
-        $this->curl->setHeader($this->getDefaultHeader());
-
-        return $this->curl->get($url);
+        return $this->request($url, 'get');
     }
 
-    public function createCourse(string $data)
+    public function createCourse(string $key, string $data)
     {
         $url = $this->getUrlMethod(self::METHOD_CREATE_COURSE);
 
-        $this->curl->setHeader($this->getDefaultHeader());
-        $this->curl->setHeader(['Content-type: application/json']);
-        $this->curl->setHeader(['Accept: application/json']);
-
         $request_body = sprintf('{"partner_id":"%s", "package": { "items": [%s] } }', $this->partner_id, $data);
 
-        return $this->curl->post($url, $request_body);
+        return $this->request($url, 'post', $request_body, [], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
     }
-    public function updateCourse(string $data)
+
+    public function updateCourse(string $key, string $data)
     {
         $url = $this->getUrlMethod(self::METHOD_UPDATE_COURSE);
 
-        $this->curl->setHeader($this->getDefaultHeader());
-        $this->curl->setHeader(['Content-type: application/json']);
-        $this->curl->setHeader(['Accept: application/json']);
-
         $request_body = sprintf('{"partner_id":"%s", "package": { "items": [%s] } }', $this->partner_id, $data);
 
-        return $this->curl->put($url, $request_body);
+        return $this->request($url, 'put', $request_body, [], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
     }
 
-    public function getUserID(string $email) {
-
+    public function getUserID(string $email)
+    {
         $url = $this->getUrlMethod(self::METHOD_GET_USER_ID);
 
-        $this->curl->setHeader($this->getDefaultHeader());
-
-        $response = $this->curl->get($url, ['email' => $email]);
+        $response = $this->request($url, 'get', ['email' => $email]);
 
         try {
             $data = json_decode($response, true);
@@ -90,24 +87,24 @@ class api
         return $data['user_id'] ?? null;
     }
 
-    public function createUser(string $data)
+    public function createParticipation(string $key, string $data)
     {
         $url = $this->getUrlMethod(self::METHOD_USER_PARTICIPATION);
 
-        $this->curl->setHeader($this->getDefaultHeader());
-        $this->curl->setHeader(['Content-type: application/json']);
-        $this->curl->setHeader(['Accept: application/json']);
-
-        return $this->curl->post($url, $data);
+        return $this->request($url, 'post', $data, [], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
     }
 
-
-    private function getDefaultHeader(): array
+    public function deleteParticipation(string $key, string $data)
     {
-        return [
-            'Accept: */*',
-            sprintf('%s: %s', self::HEADER_KEY, $this->key)
-        ];
+        $url = $this->getUrlMethod(self::METHOD_USER_PARTICIPATION);
+
+        return $this->request($url, 'delete', $data, [], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
     }
 
     private function getUrlMethod(string $method): string
@@ -119,5 +116,82 @@ class api
         }
 
         return $url . $method;
+    }
+
+    private function request($url, $method, $params = null, array $options = [], array $headers = [], string $uuid = null)
+    {
+        global $DB, $USER;
+
+        if (null === $uuid) {
+            $uuid = uuid::generate();
+        }
+
+        $this->curl->resetHeader();
+
+        $this->curl->setHeader([
+            'Accept: */*',
+            sprintf('%s: %s', self::HEADER_KEY, $this->key)
+        ]);
+
+        if (!empty($headers)) {
+            $this->curl->setHeader($headers);
+        }
+
+        switch ($method) {
+            case 'get':
+            case 'put':
+            case 'delete':
+                $params = $params ?? [];
+                break;
+            case 'post':
+            case 'patch':
+                $params = $params ?? '';
+                break;
+        }
+
+        $curl = new \stdClass();
+        $curl->uuid = $uuid;
+        $curl->url = $url;
+        $curl->method = $method;
+        $curl->request = is_array($params) ? json_encode($params) : $params;
+        $curl->usermodified = $USER->id ?? 0;
+        $curl->timecreated = $curl->timemodified = time();
+
+        $curl->id = $DB->insert_record('local_onlineeduru_curl', $curl);
+
+        $response = $this->handleRequest($method, $url, $params, $options);
+
+        $curl->response = $response;
+        $curl->status = $this->getStatus();
+        $curl->timemodified = time();
+
+        $DB->update_record('local_onlineeduru_curl', $curl);
+
+        return $response;
+    }
+
+    private function handleRequest($method, $url, $params, $options)
+    {
+        switch ($method) {
+            case 'get':
+                $response = $this->curl->get($url, $params, $options);
+                break;
+            case 'post':
+                $response = $this->curl->post($url, $params, $options);
+                break;
+            case 'put':
+                $response = $this->curl->put($url, $params, $options);
+                break;
+            case 'patch':
+                $response = $this->curl->patch($url, $params, $options);
+                break;
+            case 'delete':
+                $response = $this->curl->delete($url, $params, $options);
+                break;
+            default:
+                throw new \LogicException('неизвестный метод ' . $method);
+        }
+
+        return $response;
     }
 }

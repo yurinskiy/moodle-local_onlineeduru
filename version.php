@@ -22,7 +22,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2023121001;
+$plugin->version = 2023121101;
 $plugin->requires = 2021051700.00; // Moodle 3.11.
 $plugin->supported = [311, 400];
 $plugin->incompatible = 401;

@@ -2,6 +2,7 @@
 
 namespace local_onlineeduru\task;
 
+use core\uuid;
 use local_onlineeduru\services\api;
 
 defined('MOODLE_INTERNAL') || die();
@@ -29,58 +30,86 @@ class user_task extends \core\task\scheduled_task
 
         mtrace("Запуск задания");
 
+        $this->sendCreateParticipation();
+
+        mtrace("Завершение задания");
+    }
+
+    public function sendCreateParticipation()
+    {
+        global $CFG, $DB;
+
+        mtrace("Отправка новых пользователей курса");
+
         $sql = <<<SQL
 select j.id, j.gis_courseid, j.gis_userid, j.sessionid, j.timecreated
   from {local_onlineeduru_user} j
  where j.gis_courseid is not null
    and j.gis_userid is not null
    and j.sessionid is not null
-   and j.timerequest_created is null
+   and j.uuid_created is null
  order by j.timecreated
 SQL;
 
-        $jobs = $DB->get_records_sql($sql);
-
-        mtrace("Запланировано регистраций пользователей в ГИС СЦОС: " . \count($jobs));
-
         $i = 1;
 
-        foreach ($jobs as $job) {
-            mtrace("Отправка №{$i}", ' - ');
+        while (($jobs = $DB->get_records_sql($sql, null, 0, 10)) && $i <= 10) {
+            mtrace("Отправка пакета №{$i} записей в пакете " . \count($jobs));
 
             $transaction = $DB->start_delegated_transaction();
 
             try {
-                $data = [
-                    'course_id' => $job->gis_courseid,
-                    'user_id' => $job->gis_userid,
-                    'session_id' => $job->sessionid,
-                    'enroll_date' => date_format_string($job->timecreated, '%Y-%m-%dT%H:%M:%S%z'),
-                ];
+                $data = [];
 
-                $job->request_created = json_encode($data);
-                //$job->timerequest_created = time();
+                $uuid = uuid::generate();
 
-                mtrace($job->request_created);
+                foreach ($jobs as $job) {
+                    $item = [
+                        'course_id' => $job->gis_courseid,
+                        'user_id' => $job->gis_userid,
+                        'session_id' => $job->sessionid,
+                        'enroll_date' => date_format_string($job->timecreated, '%Y-%m-%dT%H:%M:%S%z'),
+                    ];
 
+                    $job->uuid_created = $uuid;
+                    $DB->update_record('local_onlineeduru_user', $job);
 
-                $DB->update_record('local_onlineeduru_user', $job);
+                    $data[] = $item;
+                }
 
-                $response = (new api())->createUser($job->request_created);
+                $response = (new api())->createParticipation($uuid, json_encode($data));
 
-                $job->response_created = $response;
+                $responseJson = json_decode($response);
 
-                $DB->update_record('local_onlineeduru_user', $job);
+                $j = 0;
+                foreach ($responseJson as $item) {
+                    if (!empty($item->saved ?? null)) {
+                        $j++;
+                        continue;
+                    }
+
+                    $job = $DB->get_record('local_onlineeduru_user', [
+                        'gis_courseid' => $item->course_id,
+                        'gis_userid' => $item->user_id,
+                        'sessionid' => $item->session_id,
+                    ]);
+
+                    $job->uuid_created = null;
+
+                    $DB->update_record('local_onlineeduru_user', $job);
+                }
+
+                mtrace("Из " . \count($jobs) . " записей в пакете {$j} успешно принято в ГИС СЦОС");
 
                 $transaction->allow_commit();
-
-                mtrace('Выполнено');
             } catch (\Exception $exception) {
                 $transaction->rollback($exception);
                 mtrace('Ошибка: ' . $exception->getMessage());
+            } finally {
+                $i++;
             }
         }
 
-        mtrace("Завершение задания");
+        mtrace('Отправка новых пользователей курса - завершена');
     }
 }

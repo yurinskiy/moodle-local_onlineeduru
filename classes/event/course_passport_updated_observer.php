@@ -16,6 +16,7 @@
 
 namespace local_onlineeduru\event;
 
+use core\uuid;
 use local_onlineeduru\services\db;
 
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +32,7 @@ class course_passport_updated_observer
         echo "<pre>". print_r($request, 1) . "</pre>";
 
         $api = new \local_onlineeduru\services\api();
-        $response = $api->updateCourse($request);
+        $response = $api->updateCourse(uuid::generate(), $request);
 
         echo "<pre>". print_r($response, 1) . "</pre>";
 
