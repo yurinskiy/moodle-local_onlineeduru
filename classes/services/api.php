@@ -12,6 +12,7 @@ class api
     const METHOD_GET_USER_ID = '/users/id';
     const METHOD_USER_PARTICIPATION = '/courses/participation';
     const METHOD_USER_RESULTS = '/courses/results';
+    const METHOD_USER_RESULTS_PROGRESS = '/courses/results/progress';
 
     const HEADER_KEY = 'X-CN-UUID';
 
@@ -111,6 +112,16 @@ class api
     public function sendCheckpoint(string $key, string $data)
     {
         $url = $this->getUrlMethod(self::METHOD_USER_RESULTS);
+
+        return $this->request($url, 'post', $data, [], [
+            'Content-type: application/json',
+            'Accept: application/json'
+        ], $key);
+    }
+
+    public function sendProgress(string $key, string $data)
+    {
+        $url = $this->getUrlMethod(self::METHOD_USER_RESULTS_PROGRESS);
 
         return $this->request($url, 'post', $data, [], [
             'Content-type: application/json',

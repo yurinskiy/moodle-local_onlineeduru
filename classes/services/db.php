@@ -2,8 +2,10 @@
 
 namespace local_onlineeduru\services;
 
+use completion_info;
 use core\event\user_enrolment_created;
 use core\uuid;
+use core_completion\progress;
 use local_onlineeduru\helper;
 use local_onlineeduru\model\passport;
 
@@ -197,5 +199,14 @@ class db
         $DB->update_record('local_onlineeduru_user', $participation);
 
         $transaction->allow_commit();
+    }
+
+    public static function getProgress($courseid, $userid): int
+    {
+        global $DB;
+
+        $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
+
+        return (int) round(progress::get_course_progress_percentage($course, $userid) ?? 0);
     }
 }

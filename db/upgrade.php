@@ -204,6 +204,36 @@ function xmldb_local_onlineeduru_upgrade($oldversion): bool
         upgrade_plugin_savepoint(true, 2023121101, 'local', 'onlineeduru');
     }
 
+    if ($oldversion < 2023122500) {
+
+        // Define table local_onlineeduru_progress to be created.
+        $table = new xmldb_table('local_onlineeduru_progress');
+
+        // Adding fields to table local_onlineeduru_progress.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('gis_courseid', XMLDB_TYPE_CHAR, '36', null, null, null, null);
+        $table->add_field('gis_userid', XMLDB_TYPE_CHAR, '36', null, null, null, null);
+        $table->add_field('sessionid', XMLDB_TYPE_CHAR, '36', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('progress', XMLDB_TYPE_NUMBER, '5, 2', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('uuid_request', XMLDB_TYPE_CHAR, '36', null, null, null, null);
+
+        // Adding keys to table local_onlineeduru_progress.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+
+        // Conditionally launch create table for local_onlineeduru_progress.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Onlineeduru savepoint reached.
+        upgrade_plugin_savepoint(true, 2023122500, 'local', 'onlineeduru');
+    }
 
 
     // Everything has succeeded to here. Return true.

@@ -50,4 +50,7 @@ echo "<pre>". print_r($api->test(), 1) . "</pre>";
 
 echo "<pre>". print_r($api->getUserID(core_user::get_user($USER->id)->email), 1) . "</pre>";
 
+echo "<pre>". print_r(\local_onlineeduru\services\db::getProgress(3, $USER->id), 1) . "</pre>";
+
+
 echo $OUTPUT->footer();

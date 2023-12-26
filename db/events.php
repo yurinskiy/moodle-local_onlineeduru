@@ -40,4 +40,14 @@ $observers = [
         'callback'  => '\local_onlineeduru\event\user_graded_observer::store',
         'priority'  => 9999,
     ],
+    [
+        'eventname' => '\core\event\activity_completion_changed',
+        'callback'  => '\local_onlineeduru\event\course_module_completion_updated_observer::store',
+        'priority'  => 9999,
+    ],
+    [
+        'eventname' => '\core\event\course_module_completion_updated',
+        'callback'  => '\local_onlineeduru\event\course_module_completion_updated_observer::store',
+        'priority'  => 9999,
+    ],
 ];
