@@ -35,9 +35,11 @@ class helper
     const MANAGER_PATH = '/local/onlineeduru/index.php';
     const VIEW_PATH = '/local/onlineeduru/view.php';
     const EDIT_PATH = '/local/onlineeduru/edit.php';
+    const RESEND_PATH = '/local/onlineeduru/resend.php';
     const TEST_CONNECTION_PATH = '/local/onlineeduru/test.php';
     public const ACTION_CREATE = 'create';
     public const ACTION_UPDATE = 'update';
+    public const ACTION_RESEND_PASSPORT = 'resendPassport';
 
     public static function get_create_passport_url() : moodle_url {
         return new moodle_url(self::EDIT_PATH, ['action' => self::ACTION_CREATE]);
@@ -45,6 +47,10 @@ class helper
 
     public static function get_update_passport_url(int $courseid, string $action = self::ACTION_CREATE) : moodle_url {
         return new moodle_url(self::EDIT_PATH, ['id' => $courseid, 'action' => $action]);
+    }
+
+    public static function get_resend_url(int $passportid) : moodle_url {
+        return new moodle_url(self::RESEND_PATH, ['id' => $passportid]);
     }
 
     public static function get_view_passport_url(int $courseid) : moodle_url {

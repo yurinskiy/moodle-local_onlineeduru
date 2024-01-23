@@ -15,7 +15,7 @@ class db
     {
         global $DB;
 
-        $fields = "SELECT c.*, p.*, p.id as passportid";
+        $fields = "SELECT c.*, p.*, p.id as passportid, case when p.statusresponse = 200 then 'Успех' else 'Ошибка' end as status, case when p.statusresponse != 200 then p.response end as error";
         $countfields = "SELECT COUNT(*)";
 
         $sql = " FROM {local_onlineeduru_course} c JOIN {local_onlineeduru_passport} p on p.courseid = c.courseid and p.active = 1";

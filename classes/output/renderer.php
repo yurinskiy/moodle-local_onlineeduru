@@ -44,6 +44,7 @@ class renderer extends plugin_renderer_base {
      */
     public function courses_table($courses, bool $isManager = false ): string
     {
+        global $OUTPUT;
 
         $table = new html_table();
         $table->head  = [
@@ -51,6 +52,7 @@ class renderer extends plugin_renderer_base {
             get_string('url'),
             get_string('gis_courseid', 'local_onlineeduru'),
             'Дата отправки',
+            'Статус',
             get_string('actions'),
         ];
         $table->attributes['class'] = 'admintable generaltable';
@@ -76,6 +78,9 @@ class renderer extends plugin_renderer_base {
             $time = userdate($course->timerequest);
             $timecell = new html_table_cell(s($time));
 
+            $status = $course->status;
+            $statuscell = new html_table_cell(s($status) . ($course->status !='Успех' ? $this->help_button(htmlspecialchars('<pre>'.json_encode(json_decode($course->response), JSON_PRETTY_PRINT).'</pre>')) : null));
+
             $links = '';
             // Action links.
             $viewurl = helper::get_view_passport_url($course->courseid);
@@ -88,6 +93,12 @@ class renderer extends plugin_renderer_base {
                 $links .= ' ' . $editlink;
             }
 
+            if ($course->status !='Успех' && $isManager) {
+                $resendurl = helper::get_resend_url($course->courseid);
+                $resendlink = html_writer::link($resendurl, $this->pix_icon('i/externallink', 'Повторная отправка'));
+                $links .= ' ' . $resendlink;
+            }
+
             $editcell = new html_table_cell($links);
 
             $row = new html_table_row([
@@ -95,6 +106,7 @@ class renderer extends plugin_renderer_base {
                 $urlcell,
                 $giscell,
                 $timecell,
+                $statuscell,
                 $editcell,
             ]);
 
@@ -103,5 +115,18 @@ class renderer extends plugin_renderer_base {
         }
         $table->data = $data;
         return html_writer::table($table);
+    }
+
+    private function help_button(string $text): string
+    {
+        return <<<HTML
+<a class="btn btn-link p-0" role="button"
+    data-container="body" data-toggle="popover"
+    data-placement="right" data-content="$text</pre>"
+    data-html="true" tabindex="0" data-trigger="focus">
+    <i class="icon fa fa-question-circle text-info fa-fw " role="img"></i>
+</a>
+HTML;
+
     }
 }
