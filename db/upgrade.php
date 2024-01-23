@@ -29,12 +29,12 @@ function xmldb_local_onlineeduru_upgrade($oldversion): bool
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('local_onlineeduru_courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'active');
+        $field = new xmldb_field('onlineeduru_courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'active');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('usercreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'local_onlineeduru_courseid');
+        $field = new xmldb_field('usercreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'onlineeduru_courseid');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -58,7 +58,7 @@ function xmldb_local_onlineeduru_upgrade($oldversion): bool
         $dbman->add_key($table, $key);
         $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
         $dbman->add_key($table, $key);
-        $key = new xmldb_key('local_onlineeduru_courseid', XMLDB_KEY_FOREIGN, ['local_onlineeduru_courseid'], 'local_onlineeduru_course', ['id']);
+        $key = new xmldb_key('onlineeduru_courseid', XMLDB_KEY_FOREIGN, ['onlineeduru_courseid'], 'local_onlineeduru_course', ['id']);
         $dbman->add_key($table, $key);
 
         upgrade_plugin_savepoint(true, 2023120900, 'local', 'onlineeduru');

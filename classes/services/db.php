@@ -62,26 +62,28 @@ class db
         $coursedb = new \stdClass();
         $coursedb->id = null;
         $coursedb->courseid = $courseid;
-        $coursedb->timecreated = $timenow;
-        $coursedb->timemodified = $timenow;
         $coursedb->usercreated = $USER->id;
         $coursedb->usermodified = $USER->id;
+        $coursedb->timecreated = $timenow;
+        $coursedb->timemodified = $timenow;
 
-        $coursedb->id = $DB->insert_record('local_onlineeduru_course', $coursedb);
+        $id = $DB->insert_record('local_onlineeduru_course', $coursedb);
+        $coursedb->id = $id;
 
         $passportdb = new \stdClass();
         $passportdb->id = null;
-        $passportdb->onlineeduru_courseid = $coursedb->id;
         $passportdb->courseid = $courseid;
         $passportdb->type = helper::ACTION_CREATE;
         $passportdb->active = 1;
-        $passportdb->request = $model->__toString();
-        $passportdb->timecreated = $timenow;
-        $passportdb->timemodified = $timenow;
+        $passportdb->onlineeduru_courseid = $coursedb->id;
         $passportdb->usercreated = $USER->id;
         $passportdb->usermodified = $USER->id;
+        $passportdb->timecreated = $timenow;
+        $passportdb->timemodified = $timenow;
+        $passportdb->request = $model->__toString();
 
-        $passportdb->id = $DB->insert_record('local_onlineeduru_passport', $passportdb);
+        $id = $DB->insert_record('local_onlineeduru_passport', $passportdb);
+        $passportdb->id = $id;
 
         $transaction->allow_commit();
 
@@ -111,7 +113,7 @@ class db
         $passportdb->courseid = $courseid;
         $passportdb->type = helper::ACTION_UPDATE;
         $passportdb->active = 1;
-        $passportdb->request = $model;
+        $passportdb->request = $model->__toString();
         $passportdb->timecreated = $timenow;
         $passportdb->timemodified = $timenow;
         $passportdb->usercreated = $USER->id;
