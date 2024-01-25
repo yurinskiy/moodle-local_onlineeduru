@@ -73,7 +73,13 @@ class helper
     public static function get_version_passport($courseid): int {
         global $DB;
 
-        return  $DB->count_records('local_onlineeduru_passport', ['courseid' => $courseid]) + 1;
+        $request = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'request');
+
+        if (!$request) {
+            return 1;
+        }
+
+        return  json_decode($request->request, true, 512, JSON_THROW_ON_ERROR)['business_version'] + 1;
     }
 
     public static function get_test_connection_url() : moodle_url {
