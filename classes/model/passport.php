@@ -5,6 +5,11 @@ namespace local_onlineeduru\model;
 class passport
 {
     /**
+     * @var string|null Идентификатор курса в ГИС СЦОС для обновления
+     */
+    public ?string $id = null;
+
+    /**
      * @var string Название онлайн-курса
      */
     public string $title;

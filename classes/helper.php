@@ -39,14 +39,23 @@ class helper
     const TEST_CONNECTION_PATH = '/local/onlineeduru/test.php';
     public const ACTION_CREATE = 'create';
     public const ACTION_UPDATE = 'update';
+    public const ACTION_NEW_VERSION = 'version';
     public const ACTION_RESEND_PASSPORT = 'resendPassport';
 
-    public static function get_create_passport_url() : moodle_url {
-        return new moodle_url(self::EDIT_PATH, ['action' => self::ACTION_CREATE]);
+    public static function get_create_passport_url(int $courseid = null) : moodle_url {
+        $params = ['action' => self::ACTION_CREATE];
+        if (!empty($courseid) ){
+            $params['id'] = $courseid;
+        }
+        return new moodle_url(self::EDIT_PATH, $params);
     }
 
-    public static function get_update_passport_url(int $courseid, string $action = self::ACTION_CREATE) : moodle_url {
-        return new moodle_url(self::EDIT_PATH, ['id' => $courseid, 'action' => $action]);
+    public static function get_update_passport_url(int $courseid) : moodle_url {
+        return new moodle_url(self::EDIT_PATH, ['id' => $courseid, 'action' => self::ACTION_UPDATE]);
+    }
+
+    public static function get_update_new_passport_url(int $courseid) : moodle_url {
+        return new moodle_url(self::EDIT_PATH, ['id' => $courseid, 'action' => self::ACTION_NEW_VERSION]);
     }
 
     public static function get_resend_url(int $passportid) : moodle_url {

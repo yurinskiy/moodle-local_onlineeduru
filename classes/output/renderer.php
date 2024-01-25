@@ -78,8 +78,7 @@ class renderer extends plugin_renderer_base {
             $time = userdate($course->timerequest);
             $timecell = new html_table_cell(s($time));
 
-            $status = $course->status;
-            $statuscell = new html_table_cell(s($status) . ($course->status !='Успех' ? $this->help_button(htmlspecialchars('<pre>'.json_encode(json_decode($course->response), JSON_PRETTY_PRINT).'</pre>')) : null));
+            $statuscell = new html_table_cell($this->statusCell($course));
 
             $links = '';
             // Action links.
@@ -87,16 +86,22 @@ class renderer extends plugin_renderer_base {
             $viewlink = html_writer::link($viewurl, $this->pix_icon('t/hide', get_string('view')));
             $links .= ' ' . $viewlink;
 
-            if ($isManager) {
-                $editurl = helper::get_update_passport_url($course->courseid, helper::ACTION_UPDATE);
-                $editlink = html_writer::link($editurl, $this->pix_icon('t/edit', get_string('edit')));
+            if ($course->status != 200 && $isManager) {
+                $editurl = helper::get_update_passport_url($course->courseid);
+                $editlink = html_writer::link($editurl, $this->pix_icon('i/edit', get_string('edit')));
                 $links .= ' ' . $editlink;
             }
 
-            if ($course->status !='Успех' && $isManager) {
+            if ($course->status != 200 && $isManager) {
                 $resendurl = helper::get_resend_url($course->courseid);
                 $resendlink = html_writer::link($resendurl, $this->pix_icon('i/externallink', 'Повторная отправка'));
                 $links .= ' ' . $resendlink;
+            }
+
+            if ($course->status == 200 && $isManager) {
+                $editurl = helper::get_update_new_passport_url($course->courseid);
+                $editlink = html_writer::link($editurl, $this->pix_icon('i/next', 'Новая версия'));
+                $links .= ' ' . $editlink;
             }
 
             $editcell = new html_table_cell($links);
@@ -128,5 +133,17 @@ class renderer extends plugin_renderer_base {
 </a>
 HTML;
 
+    }
+
+    private function statusCell($course) : string
+    {
+        switch ($course->status ?? null) {
+            case 200:
+                return 'Успех';
+            case null:
+                return 'Неизвестная ошибка - ошибка отправки';
+            default:
+                return 'Ошибка ' . $course->status . $this->help_button(htmlspecialchars('<pre>'.json_encode(json_decode($course->response), JSON_PRETTY_PRINT).'</pre>'));
+        }
     }
 }

@@ -8,7 +8,7 @@ require_once($CFG->libdir . '/formslib.php');
 
 abstract class repeat_elements_moodleform extends \moodleform
 {
-    protected function addRepeatElements(string $element, array $children, array $childrenOptions = [], callable $function = null): void
+    protected function addRepeatElements(string $element, array $children, array $childrenOptions = [], callable $function = null, array $data = []): void
     {
         $mform = $this->_form;
 

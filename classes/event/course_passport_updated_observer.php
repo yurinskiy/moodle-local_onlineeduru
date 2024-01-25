@@ -29,12 +29,8 @@ class course_passport_updated_observer
 
         $request = db::getPassportForRequest($course);
 
-        echo "<pre>". print_r($request, 1) . "</pre>";
-
         $api = new \local_onlineeduru\services\api();
         $response = $api->updateCourse(uuid::generate(), $request);
-
-        echo "<pre>". print_r($response, 1) . "</pre>";
 
         db::saveResponse($course, $api->getStatus(), $response);
     }

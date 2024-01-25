@@ -47,12 +47,28 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:manage', $context)) {
 
 switch ($action) {
     case helper::ACTION_RESEND_PASSPORT:
+        $passportdb = db::getPassport($id);
         $request = db::getPassportForRequest($id);
 
-        $api = new \local_onlineeduru\services\api();
-        $response = $api->createCourse(uuid::generate(), $request);
+        switch ($passportdb->type ?? null) {
+            case helper::ACTION_CREATE:
+                $api = new \local_onlineeduru\services\api();
+                $response = $api->createCourse(uuid::generate(), $request);
 
-        db::saveResponse($id, $api->getStatus(), $response);
+                db::saveResponse($id, $api->getStatus(), $response);
+                break;
+            case helper::ACTION_UPDATE:
+
+                $api = new \local_onlineeduru\services\api();
+                $response = $api->updateCourse(uuid::generate(), $request);
+
+                echo "<pre>" . print_r($response, 1) . "</pre>";
+
+                db::saveResponse($id, $api->getStatus(), $response);
+                break;
+            default:
+                throw new \coding_exception('Неизвестная операция над паспортом!');
+        }
 
         if ($api->getStatus() != '200') {
             redirect(helper::MANAGER_PATH, 'Ошибка: ' . $response, null, \core\output\notification::NOTIFY_ERROR);

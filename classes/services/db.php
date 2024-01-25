@@ -15,7 +15,7 @@ class db
     {
         global $DB;
 
-        $fields = "SELECT c.*, p.*, p.id as passportid, case when p.statusresponse = 200 then 'Успех' else 'Ошибка' end as status, case when p.statusresponse != 200 then p.response end as error";
+        $fields = "SELECT c.*, p.*, p.id as passportid, p.statusresponse as status, case when p.statusresponse != 200 then p.response end as error";
         $countfields = "SELECT COUNT(*)";
 
         $sql = " FROM {local_onlineeduru_course} c JOIN {local_onlineeduru_passport} p on p.courseid = c.courseid and p.active = 1";
@@ -102,6 +102,27 @@ class db
         $coursedb->usermodified = $USER->id;
         $DB->update_record('local_onlineeduru_course', $coursedb);
 
+        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1]);
+        $passportdb->request = $model->__toString();
+        $DB->update_record('local_onlineeduru_passport', $passportdb);
+
+        $transaction->allow_commit();
+
+        return $passportdb->id;
+    }
+
+    public static function newVersionPassport(int $courseid, passport $model): int
+    {
+        global $DB, $USER;
+
+        $transaction = $DB->start_delegated_transaction();
+        $timenow = time();
+
+        $coursedb = $DB->get_record('local_onlineeduru_course', ['courseid' => $courseid], 'id');
+        $coursedb->timemodified = $timenow;
+        $coursedb->usermodified = $USER->id;
+        $DB->update_record('local_onlineeduru_course', $coursedb);
+
         foreach ($DB->get_records('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], '', 'id') as $passport) {
             $passport->active = 0;
             $DB->update_record('local_onlineeduru_passport', $passport);
@@ -109,20 +130,29 @@ class db
 
         $passportdb = new \stdClass();
         $passportdb->id = null;
-        $passportdb->onlineeduru_courseid = $coursedb->id;
         $passportdb->courseid = $courseid;
         $passportdb->type = helper::ACTION_UPDATE;
         $passportdb->active = 1;
-        $passportdb->request = $model->__toString();
-        $passportdb->timecreated = $timenow;
-        $passportdb->timemodified = $timenow;
+        $passportdb->onlineeduru_courseid = $coursedb->id;
         $passportdb->usercreated = $USER->id;
         $passportdb->usermodified = $USER->id;
-        $DB->insert_record('local_onlineeduru_passport', $passportdb);
+        $passportdb->timecreated = $timenow;
+        $passportdb->timemodified = $timenow;
+        $passportdb->request = $model->__toString();
+
+        $id = $DB->insert_record('local_onlineeduru_passport', $passportdb);
+        $passportdb->id = $id;
 
         $transaction->allow_commit();
 
         return $passportdb->id;
+    }
+
+    public static function getPassport(int $courseid): ?\stdClass
+    {
+        global $DB;
+
+        return $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], '*', MUST_EXIST);
     }
 
     public static function getPassportForRequest(int $courseid): string
@@ -131,7 +161,7 @@ class db
         $transaction = $DB->start_delegated_transaction();
         $timenow = time();
 
-        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id, request', MUST_EXIST);
+        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id, type, request', MUST_EXIST);
         $passportdb->timerequest = $timenow;
         $passportdb->timemodified = $timenow;
         $passportdb->usermodified = $USER->id;
@@ -156,12 +186,15 @@ class db
         }
 
         $coursedb = $DB->get_record('local_onlineeduru_course', ['courseid' => $courseid], 'id', MUST_EXIST);
+        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id, type', MUST_EXIST);
+
         $coursedb->timemodified = $timenow;
         $coursedb->usermodified = $USER->id;
-        $coursedb->gis_courseid = $data['course_id'] ?? null;
+        if ($passportdb->type == helper::ACTION_CREATE) {
+            $coursedb->gis_courseid = $data['course_id'] ??  null;
+        }
         $DB->update_record('local_onlineeduru_course', $coursedb);
 
-        $passportdb = $DB->get_record('local_onlineeduru_passport', ['courseid' => $courseid, 'active' => 1], 'id', MUST_EXIST);
         $passportdb->response = $response;
         $passportdb->statusresponse = $status;
         $passportdb->timeresponse = $timenow;
