@@ -13,7 +13,7 @@ function local_onlineeduru_create_passport(?int $id = null) {
         $heading = 'Выбор курса';
         $mform = new choose_course_form(helper::get_create_passport_url());
     } else {
-        $heading = 'Заполнение данных паспорта';
+        $heading = 'Оформление электронного паспорта онлайн-курса';
         $mform = new course_passport_form(helper::get_create_passport_url($id), [
             'course' => get_course($id),
             'version' => helper::get_version_passport($id),
@@ -191,6 +191,10 @@ function local_onlineeduru_update_passport(?int $id = null) {
         $model->sessionid = $data->sessionid ?? null;
         $model->proctoring_type = $data->proctoring_type ?? null;
         $model->assessment_description = $data->assessment_description ?? null;
+
+        if ($gis_courseid = \local_onlineeduru\services\db::get($id)->gis_courseid) {
+            $model->id = $gis_courseid;
+        }
 
         $passportid = \local_onlineeduru\services\db::updatePassport($id, $model);
 

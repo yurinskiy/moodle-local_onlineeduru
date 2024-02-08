@@ -212,13 +212,11 @@ class course_passport_form extends repeat_elements_moodleform
     {
         $mform = $this->_form;
 
-        $mform->addElement('header', 'times', 'Продолжительность курса');
+        $mform->addElement('header', 'times', 'Продолжительность онлайн-курса');
 
         // Длительность онлайн-курса в неделях
-        $mform->addElement('static', 'duration', get_string('form_field_duration', 'local_onlineeduru'));
-        $mform->addHelpButton('duration', 'form_field_duration', 'local_onlineeduru');
-
         $mform->addElement('text', 'duration_value', get_string('form_field_duration_value', 'local_onlineeduru'));
+        $mform->addHelpButton('duration_value', 'form_field_duration', 'local_onlineeduru');
         $mform->setType('duration_value', PARAM_TEXT);
         $this->setRequired('duration_value');
         $mform->setDefault('duration_value', $passport['duration']['value'] ?? null);
@@ -226,6 +224,15 @@ class course_passport_form extends repeat_elements_moodleform
         $mform->addElement('select', 'duration_code', get_string('form_field_duration_code', 'local_onlineeduru'), ['week' => 'недель']);
         $this->setRequired('duration_code');
         $mform->setDefault('duration_code', $passport['duration']['code'] ?? null);
+
+        $mform->addElement('html', '<hr>');
+
+        // Трудоёмкость курса в з.е.
+        $mform->addElement('text', 'lectures', get_string('form_field_lectures_number', 'local_onlineeduru'), ['size' => '255']);
+        $mform->addHelpButton('lectures', 'form_field_lectures_number', 'local_onlineeduru');
+        $mform->setType('lectures', PARAM_TEXT);
+        $this->setRequired('lectures');
+        $mform->setDefault('lectures', $passport['lectures'] ?? null);
 
 
         $mform->addElement('html', '<hr>');
