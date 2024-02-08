@@ -235,6 +235,43 @@ function xmldb_local_onlineeduru_upgrade($oldversion): bool
         upgrade_plugin_savepoint(true, 2023122500, 'local', 'onlineeduru');
     }
 
+    if ($oldversion < 2024020800) {
+
+        // Define field progress to be added to local_onlineeduru_grade.
+        $table = new xmldb_table('local_onlineeduru_grade');
+        $field = new xmldb_field('progress', XMLDB_TYPE_NUMBER, '5, 2', null, null, null, null, 'uuid_request');
+
+        // Conditionally launch add field progress.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Onlineeduru savepoint reached.
+        upgrade_plugin_savepoint(true, 2024020800, 'local', 'onlineeduru');
+    }
+
+    if ($oldversion < 2024020801) {
+
+        // Changing type of field progress on table local_onlineeduru_progress to char.
+        $table = new xmldb_table('local_onlineeduru_progress');
+        $field = new xmldb_field('progress', XMLDB_TYPE_CHAR, '6', null, XMLDB_NOTNULL, null, '0', 'sessionid');
+
+        // Launch change of type for field progress.
+        $dbman->change_field_type($table, $field);
+
+        // Changing type of field progress on table local_onlineeduru_grade to char.
+        $table = new xmldb_table('local_onlineeduru_grade');
+        $field = new xmldb_field('progress', XMLDB_TYPE_CHAR, '6', null, XMLDB_NOTNULL, null, '0', 'uuid_request');
+
+        // Launch change of type for field progress.
+        $dbman->change_field_type($table, $field);
+
+        // Onlineeduru savepoint reached.
+        upgrade_plugin_savepoint(true, 2024020801, 'local', 'onlineeduru');
+    }
+
+
+
 
     // Everything has succeeded to here. Return true.
     return true;

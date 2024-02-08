@@ -24,6 +24,8 @@ global $CFG, $DB, $OUTPUT, $PAGE, $SITE;
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/gradelib.php');
+require_once("$CFG->dirroot/grade/querylib.php");
 
 $systemcontext = $context = context_system::instance();
 
@@ -51,6 +53,8 @@ echo "<pre>". print_r($api->test(), 1) . "</pre>";
 echo "<pre>". print_r($api->getUserID(core_user::get_user($USER->id)->email), 1) . "</pre>";
 
 echo "<pre>". print_r(\local_onlineeduru\services\db::getProgress(3, $USER->id), 1) . "</pre>";
+echo "<pre>". print_r(grade_get_course_grade( 48895, 369), 1) . "</pre>";
+echo "<pre>". print_r(round(grade_get_course_grade(48895, 369)->grade ?? 0, 2), 1) . "</pre>";
 
 
 echo $OUTPUT->footer();

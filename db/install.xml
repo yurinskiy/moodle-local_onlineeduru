@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/onlineeduru/db" VERSION="20231226" COMMENT="Создание структуры плагина onlineeduru"
+<XMLDB PATH="local/onlineeduru/db" VERSION="20240208" COMMENT="Создание структуры плагина onlineeduru"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -97,6 +97,7 @@
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="uuid_request" TYPE="char" LENGTH="36" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="progress" TYPE="char" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -111,7 +112,7 @@
         <FIELD NAME="gis_courseid" TYPE="char" LENGTH="36" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="gis_userid" TYPE="char" LENGTH="36" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="sessionid" TYPE="char" LENGTH="36" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="progress" TYPE="number" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="progress" TYPE="char" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

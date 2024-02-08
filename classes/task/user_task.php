@@ -33,8 +33,12 @@ class user_task extends \core\task\scheduled_task
 
         $this->sendResults();
         $this->sendProgress();
+
         $this->sendDeleteParticipation();
         $this->sendCreateParticipation();
+
+        $this->sendResults();
+        $this->sendProgress();
 
         mtrace("Завершение задания");
     }
@@ -224,6 +228,13 @@ select j.*
    and j.gis_userid is not null
    and j.sessionid is not null
    and j.uuid_request is null
+  and exists(select 1
+             from {local_onlineeduru_user} u
+             where u.gis_courseid = j.gis_courseid
+               and u.gis_userid = j.gis_userid
+               and u.sessionid = j.sessionid
+               and u.uuid_created is not null
+               and u.uuid_deleted is null)
  order by j.timemodified
 SQL;
 
@@ -312,6 +323,13 @@ select j.*
    and j.gis_userid is not null
    and j.sessionid is not null
    and j.uuid_request is null
+  and exists(select 1
+             from {local_onlineeduru_user} u
+             where u.gis_courseid = j.gis_courseid
+               and u.gis_userid = j.gis_userid
+               and u.sessionid = j.sessionid
+               and u.uuid_created is not null
+               and u.uuid_deleted is null)
  order by j.timemodified
 SQL;
 

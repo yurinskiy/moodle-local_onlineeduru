@@ -216,7 +216,7 @@ class course_passport_form extends repeat_elements_moodleform
 
         // Длительность онлайн-курса в неделях
         $mform->addElement('text', 'duration_value', get_string('form_field_duration_value', 'local_onlineeduru'));
-        $mform->addHelpButton('duration_value', 'form_field_duration', 'local_onlineeduru');
+        $mform->addHelpButton('duration_value', 'form_field_duration_value', 'local_onlineeduru');
         $mform->setType('duration_value', PARAM_TEXT);
         $this->setRequired('duration_value');
         $mform->setDefault('duration_value', $passport['duration']['value'] ?? null);
