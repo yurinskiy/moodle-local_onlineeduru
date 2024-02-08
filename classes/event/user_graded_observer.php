@@ -13,6 +13,7 @@ class user_graded_observer
         require_once($CFG->libdir . '/gradelib.php');
         require_once("$CFG->dirroot/grade/querylib.php");
 
+
         $courseid = $event->courseid;
         $userid = $event->relateduserid;
 
@@ -53,9 +54,13 @@ class user_graded_observer
         $grade->usermodified = $USER->id;
         $grade->timemodified = $now;
 
-        $grade->rating = grade_format_gradevalue($event->get_grade()->finalgrade, $event->get_grade()->grade_item, false, GRADE_DISPLAY_TYPE_PERCENTAGE);
+        if ($event->get_grade()->finalgrade !== null) {
+            $grade->rating = grade_format_gradevalue($event->get_grade()->finalgrade, $event->get_grade()->grade_item, false, GRADE_DISPLAY_TYPE_PERCENTAGE);
 
-        $grade->rating = trim(str_replace('%', '', $grade->rating));
+            $grade->rating = trim(str_replace('%', '', $grade->rating));
+        } else {
+            $grade->rating = 0;
+        }
 
         $grade->progress = 0; //round(grade_get_course_grade($userid, $courseid)->grade ?? 0, 2);
 
