@@ -118,7 +118,7 @@ function local_onlineeduru_update_passport(?int $id = null) {
     $passport = json_decode($passportdb->request, true, 512, JSON_THROW_ON_ERROR);
     $version = $passport['business_version'];
 
-    $heading = 'Изменение данных паспорта';
+    $heading = 'Редактирование электронного паспорта онлайн-курса';
     $mform = new course_passport_form(helper::get_update_passport_url($id), [
         'passport' => $passport,
         'course' => get_course($passportdb->courseid),
@@ -235,7 +235,7 @@ function local_onlineeduru_new_version_passport(?int $id = null) {
 
     $passport = json_decode($passportdb->request, true, 512, JSON_THROW_ON_ERROR);
 
-    $heading = 'Новая версия данных паспорта';
+    $heading = 'Редактирование электронного паспорта онлайн-курса';
     $mform = new course_passport_form(helper::get_update_new_passport_url($id), [
         'passport' => $passport,
         'course' => get_course($passportdb->courseid),

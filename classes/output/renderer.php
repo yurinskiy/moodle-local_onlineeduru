@@ -48,7 +48,7 @@ class renderer extends plugin_renderer_base {
 
         $table = new html_table();
         $table->head  = [
-            get_string('name'),
+            'Наименование онлайн-курса',
             get_string('url'),
             get_string('gis_courseid', 'local_onlineeduru'),
             'Дата отправки',
@@ -100,7 +100,7 @@ class renderer extends plugin_renderer_base {
 
             if ($course->status == 200 && $isManager) {
                 $editurl = helper::get_update_new_passport_url($course->courseid);
-                $editlink = html_writer::link($editurl, $this->pix_icon('i/next', 'Новая версия'));
+                $editlink = html_writer::link($editurl, $this->pix_icon('i/edit', get_string('edit')));
                 $links .= ' ' . $editlink;
             }
 

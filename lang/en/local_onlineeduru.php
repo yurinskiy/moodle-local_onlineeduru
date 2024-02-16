@@ -105,9 +105,9 @@ $string['form_field_teacher-add'] = 'Добавить лектора';
 
 $string['validation_course_not_exists'] = 'Курс не найден';
 
-$string['createnewcourse'] = 'Добавить курс';
+$string['createnewcourse'] = 'Добавить онлайн-курс';
 $string['next'] = 'Далее';
-$string['gis_courseid'] = 'Идентификатор курса в ГИС СЦОС';
+$string['gis_courseid'] = 'Идентификатор онлайн-курса в ГИС СЦОС';
 
 $string['settings_api_endpoint'] = 'URL';
 $string['settings_api_endpoint_help'] = 'URL-адрес точки подключения к API ГИС СЦОС';
