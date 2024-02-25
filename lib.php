@@ -52,7 +52,7 @@ function local_onlineeduru_extend_settings_navigation(settings_navigation $nav, 
         'onlineeduru',
         'onlineeduru',
 
-        new pix_icon('a/view_list_active', $mainstr)
+        new pix_icon('e/bullet_list', $mainstr)
     );
 
     if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
@@ -61,73 +61,11 @@ function local_onlineeduru_extend_settings_navigation(settings_navigation $nav, 
 
     $settingnode->add_node($mainnode, 'local_onlineeduru_settings');
 
-    if (has_capability('local/onlineeduru:manager', $context)) {
-        $teststr = 'Проверка подключения к API ГИС СЦОС';
-        $url = new moodle_url('/local/onlineeduru/test.php');
-        $testnode = navigation_node::create(
-            $teststr,
-            $url,
-            navigation_node::TYPE_SETTING,
-            'onlineeduru_test_connection',
-            'onlineeduru_test_connection',
-            new pix_icon('t/sendmessage', $teststr)
-        );
-
-
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $testnode->make_active();
-        }
-
-        $settingnode->add_node($testnode);
-
-        $addstr = 'Добавление паспорта курса';
-        $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_CREATE, 'id' => $PAGE->url->get_param('id')]);
-
-        if ($PAGE->url->compare($url, URL_MATCH_PARAMS)) {
-            $addnode = navigation_node::create(
-                $addstr,
-                $PAGE->url,
-                navigation_node::TYPE_CUSTOM,
-                'onlineeduru_add_passport',
-                'onlineeduru_add_passport',
-                new pix_icon('t/add', $addstr)
-            );
-            $addnode->make_active();
-            $mainnode->add_node($addnode);
-        }
-
-        $editstr = 'Редактирование паспорта курса';
-        $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_UPDATE, 'id' => $PAGE->url->get_param('id')]);
-        if ($PAGE->url->compare($url, URL_MATCH_PARAMS)) {
-            $editnode = navigation_node::create(
-                $editstr,
-                $PAGE->url,
-                navigation_node::TYPE_CUSTOM,
-                'onlineeduru_edit_passport',
-                'onlineeduru_edit_passport',
-                new pix_icon('t/edit', $editstr)
-            );
-            $editnode->make_active();
-            $editnode->hidden = true;
-            $mainnode->add_node($editnode);
-        }
-
-        $viewstr = 'Просмотр паспорта курса';
-        $url = new moodle_url('/local/onlineeduru/view.php');
-        if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
-            $viewnode = navigation_node::create(
-                $viewstr,
-                $PAGE->url,
-                navigation_node::TYPE_CUSTOM,
-                'onlineeduru_view_passport',
-                'onlineeduru_view_passport',
-                new pix_icon('t/hide', $viewstr)
-            );
-            $viewnode->make_active();
-            $viewnode->hidden = true;
-            $mainnode->add_node($viewnode);
-        }
-    }
+    local_onlineeduru_test_connection($settingnode, $context);
+    local_onlineeduru_add_passport($mainnode, $context);
+    local_onlineeduru_edit_passport($mainnode, $context);
+    local_onlineeduru_show_passport($mainnode, $context);
+    local_onlineeduru_logs($settingnode, $context);
 }
 
 function local_onlineeduru_get_course_image_url($course)
@@ -158,4 +96,163 @@ function local_onlineeduru_get_course_image_url($course)
     }
 
     return $urlImage;
+}
+
+function local_onlineeduru_test_connection(navigation_node $node, context $context) {
+    global $PAGE;
+
+    // Проверка подключения к API ГИС СЦОС
+    if (!has_capability('local/onlineeduru:manager', $context)) {
+        return;
+    }
+
+    $teststr = 'Проверка подключения к API ГИС СЦОС';
+    $url = new moodle_url('/local/onlineeduru/test.php');
+    $testnode = navigation_node::create(
+        $teststr,
+        $url,
+        navigation_node::TYPE_SETTING,
+        'onlineeduru_test_connection',
+        'onlineeduru_test_connection',
+        new pix_icon('t/sendmessage', $teststr)
+    );
+
+
+    if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+        $testnode->make_active();
+    }
+
+    $node->add_node($testnode);
+}
+
+function local_onlineeduru_add_passport(navigation_node $node, context $context) {
+    global $PAGE;
+
+    // Проверка подключения к API ГИС СЦОС
+    if (!has_capability('local/onlineeduru:manager', $context)) {
+        return;
+    }
+
+    $addstr = 'Добавление паспорта курса';
+    $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_CREATE, 'id' => $PAGE->url->get_param('id')]);
+
+    if (!$PAGE->url->compare($url, URL_MATCH_PARAMS)) {
+        return;
+    }
+
+    $addnode = navigation_node::create(
+        $addstr,
+        $PAGE->url,
+        navigation_node::TYPE_CUSTOM,
+        'onlineeduru_add_passport',
+        'onlineeduru_add_passport',
+        new pix_icon('t/add', $addstr)
+    );
+    $addnode->make_active();
+    $addnode->hidden = true;
+    $node->add_node($addnode);
+}
+
+function local_onlineeduru_edit_passport(navigation_node $node, context $context) {
+    global $PAGE;
+
+    // Проверка подключения к API ГИС СЦОС
+    if (!has_capability('local/onlineeduru:manager', $context)) {
+        return;
+    }
+
+    $editstr = 'Редактирование паспорта курса';
+    $url = new moodle_url('/local/onlineeduru/edit.php', ['action' => \local_onlineeduru\helper::ACTION_UPDATE, 'id' => $PAGE->url->get_param('id')]);
+
+    if (!$PAGE->url->compare($url, URL_MATCH_PARAMS)) {
+        return;
+    }
+
+    $editnode = navigation_node::create(
+        $editstr,
+        $PAGE->url,
+        navigation_node::TYPE_CUSTOM,
+        'onlineeduru_edit_passport',
+        'onlineeduru_edit_passport',
+        new pix_icon('t/edit', $editstr)
+    );
+    $editnode->make_active();
+    $editnode->hidden = true;
+    $node->add_node($editnode);
+}
+
+function local_onlineeduru_show_passport(navigation_node $node, context $context) {
+    global $PAGE;
+
+    // Проверка подключения к API ГИС СЦОС
+    if (!has_capability('local/onlineeduru:manager', $context)) {
+        return;
+    }
+
+    $viewstr = 'Просмотр паспорта курса';
+    $url = new moodle_url('/local/onlineeduru/view.php');
+
+    if (!$PAGE->url->compare($url, URL_MATCH_BASE)) {
+        return;
+    }
+
+    $viewnode = navigation_node::create(
+        $viewstr,
+        $PAGE->url,
+        navigation_node::TYPE_CUSTOM,
+        'onlineeduru_view_passport',
+        'onlineeduru_view_passport',
+        new pix_icon('t/hide', $viewstr)
+    );
+    $viewnode->make_active();
+    $viewnode->hidden = true;
+    $node->add_node($viewnode);
+}
+
+function local_onlineeduru_logs(navigation_node $node, context $context)
+{
+    global $PAGE;
+
+    // Проверка подключения к API ГИС СЦОС
+    if (!has_capability('local/onlineeduru:manager', $context)) {
+        return;
+    }
+
+
+    $logsstr = get_string('logs', 'local_onlineeduru');
+    $url = new moodle_url('/local/onlineeduru/logs.php');
+    $logsnode = navigation_node::create(
+        $logsstr,
+        $url,
+        navigation_node::TYPE_SETTING,
+        'onlineeduru_logs',
+        'onlineeduru_logs',
+        new pix_icon('i/log', $logsstr)
+    );
+
+
+    if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+        $logsnode->make_active();
+    }
+
+    $node->add_node($logsnode);
+
+    $logstr = get_string('log_by_id', 'local_onlineeduru', $PAGE->url->get_param('id'));
+    $url = new moodle_url('/local/onlineeduru/logs.php', ['id' => $PAGE->url->get_param('id')]);
+
+    if (!$PAGE->url->compare($url, URL_MATCH_PARAMS)) {
+        return;
+    }
+
+    $lognode = navigation_node::create(
+        $logstr,
+        $PAGE->url,
+        navigation_node::TYPE_CUSTOM,
+        'onlineeduru_logs_by_id',
+        'onlineeduru_logs_by_id',
+        new pix_icon('t/hide', $logstr)
+    );
+    $lognode->make_active();
+    $lognode->hidden = true;
+    $logsnode->add_node($lognode);
 }

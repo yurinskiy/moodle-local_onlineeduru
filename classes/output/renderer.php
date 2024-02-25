@@ -146,4 +146,65 @@ HTML;
                 return 'Ошибка ' . $course->status . $this->help_button(htmlspecialchars('<pre>'.json_encode(json_decode($course->response), JSON_PRETTY_PRINT).'</pre>'));
         }
     }
+
+    /**
+     * @return string HTML to output.
+     */
+    public function logs_table($data, $page, $perpage, $baseurl): string
+    {
+        $table = new html_table();
+        $table->head  = [
+            'URL',
+            'Метод',
+            'Статус',
+            'Дата',
+            'Действие',
+        ];
+        $table->attributes['class'] = 'admintable generaltable';
+        $rows = [];
+
+        foreach ($data['data'] as $log) {
+            // Url.
+            $url = $log->url;
+            $urlcell = new html_table_cell(s($url));
+
+            $method = $log->method;
+            $methodcell = new html_table_cell(s($method));
+
+            $status = $log->status;
+            $statuscell = new html_table_cell(s($status));
+
+            $time = userdate($log->timecreated);
+            $timecell = new html_table_cell(s($time));
+
+            $links = '';
+            // Action links.
+            $viewurl = new \moodle_url('/local/onlineeduru/logs.php', [
+                'id' => $log->id,
+            ]);
+            $viewlink = html_writer::link($viewurl, $this->pix_icon('t/hide', get_string('view')));
+            $links .= ' ' . $viewlink;
+
+            $row = new html_table_row([
+                $urlcell,
+                $methodcell,
+                $statuscell,
+                $timecell,
+                $links,
+            ]);
+
+            $rows[] = $row;
+        }
+        $table->data = $rows;
+
+        $table = html_writer::table($table);
+        $paging_bar = $this->paging_bar($data['total'], $page, $perpage, $baseurl);
+
+        return  $paging_bar . $table . $paging_bar;
+    }
+
+    public function render_log_page($page): string {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('local_onlineeduru/log_page', $data);
+    }
 }

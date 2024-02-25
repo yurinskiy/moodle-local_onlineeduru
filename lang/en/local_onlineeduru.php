@@ -109,6 +109,9 @@ $string['createnewcourse'] = 'Добавить онлайн-курс';
 $string['next'] = 'Далее';
 $string['gis_courseid'] = 'Идентификатор онлайн-курса в ГИС СЦОС';
 
+$string['logs'] = 'История запросов';
+$string['log_by_id'] = 'Просмотр запроса №{$a}';
+
 $string['settings_api_endpoint'] = 'URL';
 $string['settings_api_endpoint_help'] = 'URL-адрес точки подключения к API ГИС СЦОС';
 $string['settings_api_key'] = 'Уникальный ключ доступа платформы';

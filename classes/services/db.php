@@ -244,4 +244,45 @@ class db
 
         return (int) round(progress::get_course_progress_percentage($course, $userid) ?? 0);
     }
+
+    public static function logs(array $params = [], int $page = 0, int $perpage = 20): array
+    {
+        global $DB;
+
+        $fields = "SELECT c.*";
+        $countfields = "SELECT COUNT(*)";
+
+        $sql = " FROM {local_onlineeduru_curl} c";
+
+        $wheresql = '';
+
+        $total = $all = $DB->count_records_sql($countfields . $sql . $wheresql);
+
+        if (!empty($params)) {
+            $total = $DB->count_records_sql($countfields . $sql . $wheresql, $params);
+        }
+
+        $order = " ORDER BY c.id DESC";
+
+        $records = $DB->get_records_sql($fields . $sql . $wheresql . $order, $params, $page * $perpage, $perpage);
+
+        return [
+            'all' => $all,
+            'total' => $total,
+            'data' => $records,
+        ];
+    }
+
+    public static function log(int $logid): ?\stdClass
+    {
+        global $DB;
+
+        $fields = "SELECT c.*";
+
+        $sql = " FROM {local_onlineeduru_curl} c";
+
+        $wheresql = ' WHERE c.id= :id';
+
+        return $DB->get_record_sql($fields . $sql . $wheresql, ['id' => $logid]);
+    }
 }
