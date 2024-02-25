@@ -27,9 +27,10 @@ class user_enrolment_deleted_observer
     {
         global $DB;
 
-        $participation = $DB->get_record('local_onlineeduru_user', ['courseid' => $event->courseid, 'userid' => $event->userid, 'timedeleted' => null]);
+        $courseid = $event->courseid;
+        $userid = $event->relateduserid;
 
-        echo '<pre>'.print_r($participation, true);
+        $participation = $DB->get_record('local_onlineeduru_user', ['courseid' => $courseid, 'userid' => $userid, 'timedeleted' => null]);
 
         if (!$participation) {
             return;

@@ -29,15 +29,22 @@ class user_enrolment_created_observer
     {
         global $DB;
 
-        $course = $DB->get_record('local_onlineeduru_course', ['courseid' => $event->courseid]);
+        $courseid = $event->courseid;
+        $userid = $event->relateduserid;
+
+        $course = $DB->get_record('local_onlineeduru_course', ['courseid' => $courseid]);
 
         if (!$course) {
             return;
         }
 
-        $user = core_user::get_user($event->userid);
+        $user = core_user::get_user($userid);
 
         if (!$user) {
+            return;
+        }
+
+        if ($event->other['enrol'] ?? null != 'self') {
             return;
         }
 
