@@ -1,0 +1,111 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_onlineeduru/passport_view
+}}
+<div data-region="passport">
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Идентификатор онлайн-курса в ГИС СЦОС</th>
+            <td>{{ passport.id }} {{^ passport.id }} {{ course.gis_courseid }} {{/ passport.id }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_institution, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.institution }}</td>
+        </tr>
+
+        <tr>
+            <th>{{#str}}form_field_title, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.title }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_external_url, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.external_url }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_business_version, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.business_version }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_started_at, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.started_at }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_finished_at, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.finished_at }}{{^ passport.finished_at }}---{{/ passport.finished_at }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_enrollment_finished_at, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.enrollment_finished_at }}{{^ passport.enrollment_finished_at }}
+                ---{{/ passport.enrollment_finished_at }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_image, local_onlineeduru{{/str}}</th>
+            <td><img src="{{ passport.image }}" alt="{{#str}}form_field_image, local_onlineeduru{{/str}}"
+                     width="256px"/></td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_description, local_onlineeduru{{/str}}</th>
+            <td style="white-space:pre-wrap;">{{ passport.description }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_content, local_onlineeduru{{/str}}</th>
+            <td style="white-space:pre-wrap;">{{ passport.content }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_results, local_onlineeduru{{/str}}</th>
+            <td style="white-space:pre-wrap;">{{ passport.results }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_cert, local_onlineeduru{{/str}}</th>
+            <td>{{# passport.cert }}Да{{/ passport.cert }}{{^ passport.cert }}Нет{{/ passport.cert }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_lectures_number, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.lectures_number }}{{^ passport.lectures_number }}---{{/ passport.lectures_number }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_field_duration, local_onlineeduru{{/str}}</th>
+            <td>{{ passport.duration.value }} {{ passport.duration.code }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_header_competence-array, local_onlineeduru{{/str}}</th>
+            <td style="white-space:pre-wrap;">{{ passport.competences }}</td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_header_requirement-array, local_onlineeduru{{/str}}</th>
+            <td><dl>{{# passport.requirements }}<dd>{{.}}</dd>{{/passport.requirements}}</dl></td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_header_direction-array, local_onlineeduru{{/str}}</th>
+            <td><dl>{{# passport.direction }}<dd>{{.}}</dd>{{/passport.direction}}</dl></td>
+        </tr>
+        <tr>
+            <th>{{#str}}form_header_teacher-array, local_onlineeduru{{/str}}</th>
+            <td>
+                <dl>
+                    {{# passport.teachers }}
+                        <dt><img src="{{ image }}" alt="{{#str}}form_field_teacher-image, local_onlineeduru{{/str}}" width="128px"/></dt>
+                        <dd>{{ display_name }}{{# description }}, {{/ description }}{{ description }}</dd>
+                    {{/passport.teachers}}
+                </dl>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

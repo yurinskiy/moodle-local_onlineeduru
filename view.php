@@ -39,20 +39,27 @@ if (!is_siteadmin() && !has_capability('local/onlineeduru:view', $context)) {
 }
 
 $course = $DB->get_record('local_onlineeduru_course', ['courseid' => $id], '*', MUST_EXIST);
+$coursename = get_course($id)->fullname;
 
 $PAGE->set_context($context);
-$PAGE->set_url('/local/onlineeduru/view.php', ['id' => $id]); // Defined here to avoid notices on errors etc.
-$PAGE->set_pagelayout('admin');
-$PAGE->set_title(get_string('pluginname', 'local_onlineeduru'));
-$PAGE->set_heading(format_string($SITE->fullname, true, ['context' => $systemcontext]));
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading('Просмотр паспорта курса');
+// Set up the page.
+$title = get_string('passport_view', 'local_onlineeduru', $coursename);
+$pagetitle = $title;
+$url = new moodle_url('/local/onlineeduru/view.php', ['id' => $id]);
+$PAGE->set_url($url);
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
+$PAGE->set_pagelayout('admin');
+
+/** @var \local_onlineeduru\output\renderer $renderer */
+$output = $PAGE->get_renderer('local_onlineeduru');
+echo $output->header();
+echo $output->heading($pagetitle);
 
 $passport = \local_onlineeduru\services\db::get($id);
 
-echo '<pre>' . print_r($passport,1 ) . '</pre>';
+$renderable = new \local_onlineeduru\output\passport_view_page($course, $passport);
+echo $output->render($renderable);
 
-//local_onlineeduru\event\course_passport_created::create(['context' => context_course::instance($id), 'objectid' => $passport->passportid, 'courseid' => $passport->courseid])->trigger();
-
-echo $OUTPUT->footer();
+echo $output->footer();

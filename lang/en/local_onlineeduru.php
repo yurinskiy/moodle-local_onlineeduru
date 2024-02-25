@@ -29,7 +29,7 @@ $string['course_passport_updated'] = 'Обновление паспорта дл
 $string['form_header_passport_system'] = 'Технические данные';
 $string['form_field_institution'] = 'Идентификатор Правообладателя';
 $string['form_field_external_url'] = 'Ссылка на онлайн-курс на сайте Платформы';
-$string['form_field_business_version'] = 'Версия курса';
+$string['form_field_business_version'] = 'Версия онлайн-курса';
 $string['form_header_passport'] = 'Паспорт онлайн-курса';
 
 $string['form_field_title'] = 'Наименование онлайн-курса';
@@ -60,15 +60,6 @@ $string['form_field_duration'] = 'Длительность онлайн-курс
 $string['form_field_duration_code'] = 'Код вида длительности';
 $string['form_field_duration_value'] = 'Длительность онлайн-курса';
 $string['form_field_duration_value_help'] = 'Например: 5 недель';
-
-$string['form_header_course_teachers'] = 'Лекторы курса';
-$string['form_field_teacher_display_name'] = 'ФИО лектора';
-$string['form_field_teacher_display_name_help'] = 'Например: Иванов Иван Иванович';
-$string['form_field_teacher_image'] = 'Ссылка на изображение лектора';
-$string['form_field_teacher_image_help'] = 'Например: https://online.edu.ru/static/courses/i/01.01/rating/2.jpg';
-$string['form_field_teacher_description'] = 'Описание лектора';
-$string['form_field_teacher_description_help'] = 'Например: Кандидат педагогических наук, доцент.';
-$string['form_field_teacher_delete'] = 'Удалить лектора';
 
 $string['form_header_competence-array'] = 'Компетенции';
 $string['form_field_competence-title'] = 'Компетенция №{$a}';
@@ -103,7 +94,7 @@ $string['form_field_teacher-delete'] = 'Удалить лектора';
 $string['form_field_teacher-add'] = 'Добавить лектора';
 
 
-$string['validation_course_not_exists'] = 'Курс не найден';
+$string['validation_course_not_exists'] = 'Онлайн-курс не найден';
 
 $string['createnewcourse'] = 'Добавить онлайн-курс';
 $string['next'] = 'Далее';
@@ -111,6 +102,7 @@ $string['gis_courseid'] = 'Идентификатор онлайн-курса в
 
 $string['logs'] = 'История запросов';
 $string['log_by_id'] = 'Просмотр запроса №{$a}';
+$string['passport_view'] = 'Просмотр паспорта онлайн-курса - {$a}';
 
 $string['settings_api_endpoint'] = 'URL';
 $string['settings_api_endpoint_help'] = 'URL-адрес точки подключения к API ГИС СЦОС';

@@ -207,4 +207,9 @@ HTML;
         $data = $page->export_for_template($this);
         return parent::render_from_template('local_onlineeduru/log_page', $data);
     }
+
+    public function render_passport_view_page($page): string {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('local_onlineeduru/passport_view_page', $data);
+    }
 }
