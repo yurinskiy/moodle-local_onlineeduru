@@ -44,7 +44,7 @@ class user_enrolment_created_observer
             return;
         }
 
-        if ($event->other['enrol'] ?? null != 'self') {
+        if ($event->other['enrol'] != 'self') {
             return;
         }
 
